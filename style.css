@@ -48,7 +48,7 @@ body {
 }
 
 .page {
-  max-width: 960px;
+  max-width: 1200px;
   margin: 0 auto;
   padding: var(--s4) var(--s2);
 }
@@ -312,42 +312,41 @@ select:disabled,
   .actions { flex-direction: column; align-items: stretch; }
 }
 
-/* ---------- Topic tabs (v2) ---------- */
+/* ---------- Topic navigation: side column ---------- */
 
-.tabs { margin-bottom: var(--s6); border-bottom: 1px solid var(--line-soft); }
-.tab-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.layout {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(216px, 1fr));
-  gap: 0 var(--s2);
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: var(--s6);
+  align-items: start;
 }
+.layout-main { min-width: 0; }
+
+.tabs {
+  position: sticky;
+  top: var(--s3);
+  border-right: 1px solid var(--line-soft);
+}
+.tab-list { list-style: none; margin: 0; padding: 0; }
 .tab {
-  display: grid;
-  grid-template-columns: 2.75em 1fr;
-  align-content: start;
+  display: block;
   min-height: 48px;
-  padding: var(--s1);
-  border-bottom: 3px solid transparent;
+  padding: var(--s1) var(--s2);
+  border-left: 3px solid transparent;
   color: var(--ink);
   text-decoration: none;
   line-height: 1.35;
 }
-.tab-code {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.tab-status { grid-column: 2; font-size: var(--text-sm); }
-a.tab { font-weight: 600; }
-a.tab:hover { background: var(--tint); border-bottom-color: var(--ink); }
-a.tab[aria-current="page"] { color: var(--accent); border-bottom-color: var(--accent); }
+.tab-name { display: block; }
+.tab-status { display: block; font-size: var(--text-sm); }
+a.tab { font-weight: 600; display: flex; align-items: center; }
+a.tab:hover { background: var(--tint); border-left-color: var(--ink); }
+a.tab[aria-current="page"] { color: var(--accent); border-left-color: var(--accent); }
 a.tab[aria-current="page"]:hover { background: var(--tint); }
 .tab.is-planned { color: var(--ink-muted); cursor: not-allowed; }
 
 .panel-head { margin-bottom: var(--s3); }
 .panel-head h2 { margin-bottom: var(--s1); }
-.panel-head .tab-code { margin-right: var(--s1); }
 
 /* ---------- D3 pieces ---------- */
 
@@ -365,10 +364,15 @@ a.tab[aria-current="page"]:hover { background: var(--tint); }
 .facts dt { font-weight: 700; }
 .facts dd { margin: 0; }
 
-@media (max-width: 640px) {
-  .tab-list { display: flex; overflow-x: auto; gap: 0; }
+/* Narrow screens: the side column becomes a row above the content that scrolls sideways. */
+@media (max-width: 800px) {
+  .layout { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
+  .tabs { position: static; border-right: 0; border-bottom: 1px solid var(--line-soft); }
+  .tab-list { display: flex; overflow-x: auto; }
   .tab-list li { flex: 0 0 auto; }
-  .tab { width: 184px; }
+  .tab { width: 168px; border-left: 0; border-bottom: 3px solid transparent; }
+  a.tab:hover { border-bottom-color: var(--ink); }
+  a.tab[aria-current="page"] { border-bottom-color: var(--accent); }
 }
 
 @media (max-width: 480px) {

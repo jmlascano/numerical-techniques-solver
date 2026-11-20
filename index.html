@@ -6,7 +6,7 @@
   <title>Row, Column and Null Spaces — AMAT 105 Solver</title>
   <meta name="description" content="Step-by-step AMAT 105 linear algebra solutions with exact fractions, one tab per slide set.">
   <!-- Bump ?v= on every release so browsers fetch fresh files (GitHub Pages caches for 10 minutes). -->
-  <link rel="stylesheet" href="style.css?v=5">
+  <link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
   <main class="page">
@@ -15,24 +15,27 @@
       <p class="lede">Step-by-step solutions with exact fractions, organized by slide set. Each topic has its own link.</p>
     </header>
 
-    <nav class="tabs" aria-label="Topics by slide set">
+    <div class="layout">
+    <nav class="tabs" aria-label="Topics">
       <ul class="tab-list">
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">AB1</span><span class="tab-name">Systems of Linear Equations</span><span class="tab-status">Planned</span></span></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">B2</span><span class="tab-name">Matrices and Matrix Operations</span><span class="tab-status">Planned</span></span></li>
-        <li><a class="tab" href="#b3" data-topic="b3"><span class="tab-code">B3</span><span class="tab-name">LU Decomposition</span></a></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">C</span><span class="tab-name">Determinants</span><span class="tab-status">Planned</span></span></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">D1</span><span class="tab-name">Real Vector Spaces</span><span class="tab-status">Planned</span></span></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">D2</span><span class="tab-name">Coordinates and Bases</span><span class="tab-status">Planned</span></span></li>
-        <li><a class="tab" href="#d3" data-topic="d3"><span class="tab-code">D3</span><span class="tab-name">Row, Column and Null Spaces</span></a></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">D4</span><span class="tab-name">Linear Transformations</span><span class="tab-status">Planned</span></span></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">E</span><span class="tab-name">Eigenvalues and Eigenvectors</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Systems of Linear Equations</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Matrices and Matrix Operations</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#b3" data-topic="b3"><span class="tab-name">LU Decomposition</span></a></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Determinants</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Real Vector Spaces</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Coordinates and Bases</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#d3" data-topic="d3"><span class="tab-name">Row, Column and Null Spaces</span></a></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Linear Transformations</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Eigenvalues and Eigenvectors</span><span class="tab-status">Planned</span></span></li>
       </ul>
     </nav>
+
+    <div class="layout-main">
 
     <!-- ===================== B3: LU Decomposition ===================== -->
     <section id="panel-b3" class="panel" data-title="LU Decomposition" aria-labelledby="b3-title" hidden>
       <header class="panel-head">
-        <h2 id="b3-title"><span class="tab-code">B3</span> LU Decomposition</h2>
+        <h2 id="b3-title">LU Decomposition</h2>
         <p class="lede">
           Enter a square matrix <var>A</var> and a vector <var>b</var>. The solver writes <var>A</var> = <var>LU</var>
           using Anton’s method, then solves <var>Ly</var> = <var>b</var> and <var>Ux</var> = <var>y</var>.
@@ -88,7 +91,7 @@
     <!-- ============== D3: Row, Column and Null Spaces ============== -->
     <section id="panel-d3" class="panel" data-title="Row, Column and Null Spaces" aria-labelledby="d3-title" hidden>
       <header class="panel-head">
-        <h2 id="d3-title"><span class="tab-code">D3</span> Row, Column and Null Spaces</h2>
+        <h2 id="d3-title">Row, Column and Null Spaces</h2>
         <p class="lede">
           Enter any <var>m</var> × <var>n</var> matrix <var>A</var>. The solver reduces it to reduced row echelon form,
           then finds bases for the row space, column space and null space of <var>A</var>, its rank and nullity.
@@ -140,19 +143,21 @@
       </section>
 
     </section>
+    </div>
+    </div>
   </main>
 
   <footer class="page site-footer">
     <p>Demo only. Created by Jana Mei Lascano for AMAT 105 extra credit.</p>
   </footer>
 
-  <script src="fraction.js?v=5"></script>
-  <script src="rowreduce.js?v=5"></script>
-  <script src="lu.js?v=5"></script>
-  <script src="spaces.js?v=5"></script>
-  <script src="render.js?v=5"></script>
-  <script src="tab-b3.js?v=5"></script>
-  <script src="tab-d3.js?v=5"></script>
-  <script src="app.js?v=5"></script>
+  <script src="fraction.js?v=6"></script>
+  <script src="rowreduce.js?v=6"></script>
+  <script src="lu.js?v=6"></script>
+  <script src="spaces.js?v=6"></script>
+  <script src="render.js?v=6"></script>
+  <script src="tab-b3.js?v=6"></script>
+  <script src="tab-d3.js?v=6"></script>
+  <script src="app.js?v=6"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 /*
  * app.js — topic tabs and hash routing (#b3, #d3).
  * Each built topic is a <section id="panel-…"> in index.html with its own script (tab-*.js).
- * Planned topics are shown in the tab bar but are not links.
+ * Planned topics are shown in the topic list but are not links.
  */
 (function () {
   "use strict";
@@ -26,11 +26,19 @@
     links.forEach((a) => {
       if (a.dataset.topic === topic) {
         a.setAttribute("aria-current", "page");
-        a.scrollIntoView({ block: "nearest", inline: "nearest" });
+        revealTab(a);
       } else {
         a.removeAttribute("aria-current");
       }
     });
+  }
+
+  /* When the topic list is a sideways-scrolling row (narrow screens), center the active topic in it. */
+  function revealTab(a) {
+    const list = a.closest(".tab-list");
+    if (list.scrollWidth <= list.clientWidth) return;
+    const li = a.parentElement;
+    list.scrollLeft = li.offsetLeft - list.offsetLeft - (list.clientWidth - li.offsetWidth) / 2;
   }
 
   window.addEventListener("hashchange", () => show(topicFromHash()));
