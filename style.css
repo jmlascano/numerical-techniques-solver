@@ -73,6 +73,7 @@ h2:focus { outline: none; }
 
 .intro { margin-bottom: var(--s4); }
 .lede { margin-top: var(--s1); max-width: 64ch; color: var(--ink-muted); }
+.demo-note { margin-top: var(--s1); font-size: var(--text-sm); font-weight: 600; }
 
 /* ---------- Input panel ---------- */
 
@@ -297,8 +298,6 @@ select:disabled,
 .block-fail { border-top: 2px solid var(--ink); }
 .fail-text { font-weight: 600; max-width: 64ch; margin-bottom: var(--s2); }
 
-.footer { padding-top: 0; color: var(--ink-muted); font-size: var(--text-sm); }
-.footer p { max-width: 80ch; }
 
 /* ---------- Phone ---------- */
 

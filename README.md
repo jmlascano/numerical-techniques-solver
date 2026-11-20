@@ -1,6 +1,8 @@
-# LU Decomposition Solver — AMAT 105
+# AMAT 105 Linear Algebra Solver
 
-A step-by-step LU decomposition solver for AMAT 105 (Anton, *Elementary Linear Algebra*, 10th ed.).
+A step-by-step linear algebra solver for AMAT 105 (Anton, *Elementary Linear Algebra*, 10th ed.), with one tab per slide set and exact fractions throughout.
+
+**Demo only.** Created by Jana Mei Lascano for AMAT 105 extra credit.
 
 **Live site:** https://jmlascano.github.io/numerical-techniques-solver/
 
@@ -46,6 +48,10 @@ All arithmetic is exact. `fraction.js` uses BigInt numerators and denominators a
 | `app.js` | Tabs and hash routing |
 | `tests.html` | Open it in a browser to run every test case and see pass/fail |
 
+## Releasing an update
+
+`index.html` and `tests.html` load every script and the stylesheet with a version query, such as `style.css?v=2`. Raise the number in both files whenever you change a `.js` or `.css` file. GitHub Pages lets browsers cache files for 10 minutes, and without a new version number a visitor can get the new page with old scripts.
+
 ## Run locally
 
 There is no build step and nothing to install. Do either of these:
@@ -55,7 +61,7 @@ There is no build step and nothing to install. Do either of these:
 
 ## Tests
 
-Open `tests.html`. It checks:
+The tests are for development only. The live site does not link to them, and `tests.html` asks search engines not to index it. Open `tests.html` locally (double-click it, or go to http://localhost:8000/tests.html). It checks:
 
 - **B3**, from AMAT 105 Review & Exercises Problem A: *L*, *U*, the row operations, and both right-hand sides (*b* = [9, 0, −1] → *x* = [1, −1, 2]; *b* = [4, 3, 0] → *x* = [43/52, −53/52, 23/52]), plus zero pivots, a singular matrix, and a non-square matrix.
 - **D3 Test 1**, the 4×5 example: RREF, pivot columns 1, 2, 3, all three bases, rank 3, nullity 2.
