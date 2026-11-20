@@ -19,7 +19,7 @@
 <body>
   <main class="page">
     <h1>Tests — LU Decomposition Solver</h1>
-    <p class="lede">Runs the AMAT 105 Review &amp; Exercises Problem A cases and edge cases in this browser. Every comparison is exact.</p>
+    <p class="lede">Runs the B3 (LU decomposition) and D3 (row, column and null space) test cases and edge cases in this browser. Every comparison is exact.</p>
     <p id="summary" data-status="running" role="status">Running…</p>
     <div class="t-wrap">
       <table class="t-table">
@@ -31,7 +31,9 @@
   </main>
 
   <script src="fraction.js"></script>
+  <script src="rowreduce.js"></script>
   <script src="lu.js"></script>
+  <script src="spaces.js"></script>
   <script>
     (function () {
       "use strict";
@@ -143,6 +145,60 @@
         eq("LU = A", r.check.luEqualsA, true);
         eq("Ax = b", r.check.axEqualsB, true);
         eq("U has 1s on its diagonal", r.lu.U.map((row, i) => String(row[i])), ["1", "1", "1", "1", "1"]);
+      });
+
+
+      /* ================= D3: Row, Column and Null Spaces ================= */
+      const strs = (M) => M.map((r) => (Array.isArray(r) ? r.map(String) : String(r)));
+
+      test("Gauss–Jordan writes row interchanges as R₁ ↔ R₂", () => {
+        const r = RowReduce.rref([[0, 1], [1, 0]]);
+        eq("steps for [[0,1],[1,0]]", r.steps.map((s) => s.text), ["R₁ ↔ R₂"]);
+        eq("RREF", strs(r.rref), [["1", "0"], ["0", "1"]]);
+      });
+
+      test("D3 Test 1 (4×5, Anton-style)", () => {
+        const T1 = [[1, -2, 0, 0, 3], [2, -5, -3, -2, 6], [0, 5, 15, 10, 0], [2, 6, 18, 8, 6]];
+        const r = Spaces.analyze(T1);
+        eq("T1 RREF", strs(r.reduction.rref), [["1", "0", "0", "-2", "3"], ["0", "1", "0", "-1", "0"], ["0", "0", "1", "1", "0"], ["0", "0", "0", "0", "0"]]);
+        eq("T1 pivot columns", r.reduction.pivots.map((p) => p + 1), [1, 2, 3]);
+        eq("T1 every step is one operation in course notation", r.reduction.steps.every((s) => /^R[₁-₉] (→|↔) /.test(s.text)), true);
+        eq("T1 row space basis", strs(r.rowBasis), [["1", "0", "0", "-2", "3"], ["0", "1", "0", "-1", "0"], ["0", "0", "1", "1", "0"]]);
+        eq("T1 column space basis (columns of A)", r.colBasis.map((c) => c.vector.map(String)), [["1", "2", "0", "2"], ["-2", "-5", "5", "6"], ["0", "-3", "15", "18"]]);
+        eq("T1 free variables", r.nullSpace.free.map((f) => "x" + (f + 1)), ["x4", "x5"]);
+        eq("T1 null space basis", r.nullSpace.basis.map((b) => b.vector.map(String)), [["2", "1", "-1", "1", "0"], ["-3", "0", "0", "0", "1"]]);
+        eq("T1 parametric form x = s·v₁ + t·v₂", r.nullSpace.general, ["2s − 3t", "s", "−s", "s", "t"]);
+        eq("T1 rank, nullity, n", [r.rank, r.nullity, r.n], [3, 2, 5]);
+        eq("T1 rank + nullity = n", r.dimensionTheoremHolds, true);
+        eq("T1 Av = 0 for each basis vector", r.checks.map((c) => c.product.map(String)), [["0", "0", "0", "0"], ["0", "0", "0", "0"]]);
+      });
+
+      test("D3 Test 2 (the LU tab's 3×3)", () => {
+        const r = Spaces.analyze(A);
+        eq("T2 RREF = I₃", strs(r.reduction.rref), [["1", "0", "0"], ["0", "1", "0"], ["0", "0", "1"]]);
+        eq("T2 rank, nullity", [r.rank, r.nullity], [3, 0]);
+        eq("T2 null space = {0} (empty basis)", r.nullSpace.basis.length, 0);
+        eq("T2 column space basis = columns of A", r.colBasis.map((c) => c.vector.map(String)), [["2", "1", "3"], ["-1", "-3", "2"], ["3", "-2", "-1"]]);
+        eq("T2 rank + nullity = n", r.dimensionTheoremHolds, true);
+      });
+
+      test("D3 Test 3 (2×3 zero matrix)", () => {
+        const r = Spaces.analyze([[0, 0, 0], [0, 0, 0]]);
+        eq("T3 no row operations", r.reduction.steps.length, 0);
+        eq("T3 rank, nullity", [r.rank, r.nullity], [0, 3]);
+        eq("T3 null space basis e₁, e₂, e₃", r.nullSpace.basis.map((b) => b.vector.map(String)), [["1", "0", "0"], ["0", "1", "0"], ["0", "0", "1"]]);
+        eq("T3 row space basis empty", r.rowBasis.length, 0);
+        eq("T3 column space basis empty", r.colBasis.length, 0);
+        eq("T3 rank + nullity = n", r.dimensionTheoremHolds, true);
+      });
+
+      test("D3 1×1 and 6×6 sizes", () => {
+        const one = Spaces.analyze([[F("-3/4")]]);
+        eq("1×1 [−3/4]: rank 1, nullity 0", [one.rank, one.nullity], [1, 0]);
+        const M = [[1, 2, 3, 4, 5, 6], [2, 4, 6, 8, 10, 12], [0, 1, 0, 1, 0, 1], [1, 0, 1, 0, 1, 0], [F("1/2"), 1, F("3/2"), 2, F("5/2"), 3], [3, 3, 3, 3, 3, 3]];
+        const r = Spaces.analyze(M);
+        eq("6×6: rank + nullity = 6", r.rank + r.nullity, 6);
+        eq("6×6: Av = 0 for every basis vector", r.checks.every((c) => c.isZero), true);
       });
 
       const s = document.getElementById("summary");

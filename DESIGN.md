@@ -39,7 +39,11 @@ There is no red. Errors are shown with a thick black border and fill on the bad 
 |---|---|---|---|---|
 | Solve (primary, the only accent button) | Underlined label + inset white ring | 3px accent outline, 2px offset | Gray fill, muted text, `not-allowed` cursor (when any entry of A is empty, with a note saying how many) | Active: thicker ring |
 | Secondary buttons (Load example, Clear) | Black border + light tint | Same outline | Same as Solve | |
-| Inputs and size select | Black border | Accent border + outline | Tint fill | Invalid: 2px black border + tint, `aria-invalid` |
+| Inputs and size selects | Black border | Accent border + outline | Tint fill | Invalid: 2px black border + tint, `aria-invalid` |
+| Topic tab, built (a link) | Light tint + black underline | Same outline | n/a | Active: accent text + 3px accent underline (`aria-current="page"`), never a filled pill |
+| Topic tab, planned | n/a | Not focusable | Always: muted text, "Planned" label, `not-allowed` cursor, `aria-disabled` | Not a link |
+
+Each tab has exactly one primary button: "Solve" (B3) or "Find bases" (D3).
 
 All buttons and inputs are at least 48px tall.
 
@@ -49,6 +53,12 @@ None. The one exception: after Solve, the page scrolls to the solution (smoothly
 
 ## Layout
 
-- Max width 960px. Input first, then the solution, in this order: row operations → L and U → forward substitution → back substitution → x → check.
+- Tab bar: one tab per slide set, in course order (AB1, B2, B3, C, D1, D2, D3, D4, E). Each tab shows its slide code in a fixed first column (bold, tabular numerals), then the topic name. Wider than 640px it is a grid that wraps. At 640px and below it is a single row that scrolls sideways inside itself, with 184px tabs so the next one peeks in, and the active tab is scrolled into view.
+- Routing: `#b3`, `#d3`. An unknown or planned hash falls back to the default, D3.
+- Pivot columns (D3) use the same accent bold as the changed row in each step.
+- Equations that hold several matrices, such as the parametric vector form, wrap on a phone, and a coefficient always stays with its vector ("+ t [v]").
+- Max width 960px. In each tab, the input comes first, then the solution.
+  - B3 order: row operations → L and U → forward substitution → back substitution → x → check.
+  - D3 order: Gauss–Jordan steps → R and the pivot columns → row space → column space → null space → rank, nullity and the Dimension Theorem → Av = 0.
 - At 480px and below, Solve goes full width, cell width stays 48px, and the `b` column moves below `A` when it does not fit beside it.
-- Wide matrices scroll inside their own box. The page itself never scrolls sideways (checked at 375px with a 5×5 matrix).
+- Wide matrices scroll inside their own box. The page itself never scrolls sideways (checked at 375px with a 5×5 B3 matrix and a 6×6 D3 matrix).

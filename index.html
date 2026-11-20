@@ -3,80 +3,164 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>LU Decomposition Solver — AMAT 105</title>
-  <meta name="description" content="Step-by-step LU decomposition with exact fractions, following Anton's Elementary Linear Algebra.">
+  <title>Row, Column and Null Spaces — AMAT 105 Solver</title>
+  <meta name="description" content="Step-by-step AMAT 105 linear algebra solutions with exact fractions, one tab per slide set.">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="page">
     <header class="intro">
-      <h1>LU Decomposition Solver — AMAT 105</h1>
-      <p class="lede">
-        Enter a square matrix <var>A</var> and a vector <var>b</var>. The solver writes <var>A</var> = <var>LU</var>
-        using Anton’s method, then solves <var>Ly</var> = <var>b</var> and <var>Ux</var> = <var>y</var>.
-        Every number is an exact fraction.
-      </p>
+      <h1>AMAT 105 Linear Algebra Solver</h1>
+      <p class="lede">Step-by-step solutions with exact fractions, organized by slide set. Each topic has its own link.</p>
     </header>
 
-    <form id="input-form" class="input-panel" novalidate aria-labelledby="input-heading">
-      <h2 id="input-heading" class="visually-hidden">Input</h2>
+    <nav class="tabs" aria-label="Topics by slide set">
+      <ul class="tab-list">
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">AB1</span><span class="tab-name">Systems of Linear Equations</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">B2</span><span class="tab-name">Matrices and Matrix Operations</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#b3" data-topic="b3"><span class="tab-code">B3</span><span class="tab-name">LU Decomposition</span></a></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">C</span><span class="tab-name">Determinants</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">D1</span><span class="tab-name">Real Vector Spaces</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">D2</span><span class="tab-name">Coordinates and Bases</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#d3" data-topic="d3"><span class="tab-code">D3</span><span class="tab-name">Row, Column and Null Spaces</span></a></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">D4</span><span class="tab-name">Linear Transformations</span><span class="tab-status">Planned</span></span></li>
+        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-code">E</span><span class="tab-name">Eigenvalues and Eigenvectors</span><span class="tab-status">Planned</span></span></li>
+      </ul>
+    </nav>
 
-      <div class="controls">
-        <label class="field">
-          <span class="field-label">Size of A</span>
-          <select id="size" name="size">
-            <option value="2">2 × 2</option>
-            <option value="3" selected>3 × 3</option>
-            <option value="4">4 × 4</option>
-            <option value="5">5 × 5</option>
-          </select>
-        </label>
-        <button type="button" id="load-example" class="button secondary">Load example</button>
-        <button type="button" id="clear" class="button secondary">Clear</button>
-      </div>
+    <!-- ===================== B3: LU Decomposition ===================== -->
+    <section id="panel-b3" class="panel" data-title="LU Decomposition" aria-labelledby="b3-title" hidden>
+      <header class="panel-head">
+        <h2 id="b3-title"><span class="tab-code">B3</span> LU Decomposition</h2>
+        <p class="lede">
+          Enter a square matrix <var>A</var> and a vector <var>b</var>. The solver writes <var>A</var> = <var>LU</var>
+          using Anton’s method, then solves <var>Ly</var> = <var>b</var> and <var>Ux</var> = <var>y</var>.
+        </p>
+      </header>
 
-      <div class="entry-wrap">
-        <div class="entry">
-          <div class="entry-block">
-            <span class="entry-label" id="label-a">A</span>
-            <div class="bracket"><div id="grid-a" class="grid" role="group" aria-labelledby="label-a"></div></div>
-          </div>
-          <div class="entry-block">
-            <span class="entry-label" id="label-b">b</span>
-            <div class="bracket"><div id="grid-b" class="grid grid-b" role="group" aria-labelledby="label-b"></div></div>
+      <form id="b3-form" class="input-panel" novalidate aria-label="LU decomposition input">
+        <div class="controls">
+          <label class="field">
+            <span class="field-label">Size of A</span>
+            <select id="b3-size">
+              <option value="2">2 × 2</option>
+              <option value="3" selected>3 × 3</option>
+              <option value="4">4 × 4</option>
+              <option value="5">5 × 5</option>
+            </select>
+          </label>
+          <button type="button" id="b3-example" class="button secondary">Load example</button>
+          <button type="button" id="b3-clear" class="button secondary">Clear</button>
+        </div>
+
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block">
+              <span class="entry-label" id="b3-label-a">A</span>
+              <div class="bracket"><div id="b3-grid-a" class="grid" role="group" aria-labelledby="b3-label-a"></div></div>
+            </div>
+            <div class="entry-block">
+              <span class="entry-label" id="b3-label-b">b</span>
+              <div class="bracket"><div id="b3-grid-b" class="grid" role="group" aria-labelledby="b3-label-b"></div></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <p class="hint">
-        Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>).
-        Leave <var>b</var> empty to find only <var>L</var> and <var>U</var>.
+        <p class="hint">
+          Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>).
+          Leave <var>b</var> empty to find only <var>L</var> and <var>U</var>.
+        </p>
+        <div id="b3-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="b3-solve" class="button primary">Solve</button>
+          <span id="b3-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="b3-results" class="results" aria-labelledby="b3-results-heading" hidden>
+        <h2 id="b3-results-heading" tabindex="-1">Solution</h2>
+        <div id="b3-body"></div>
+      </section>
+
+      <p class="method-note">
+        Method: Anton, <cite>Elementary Linear Algebra</cite>, 10th ed. — reduce <var>A</var> to row echelon form <var>U</var>
+        with leading 1s, using no row interchanges. <var>L</var> holds each pivot on its diagonal and each eliminated value below it.
       </p>
+    </section>
 
-      <div id="message" class="message" role="alert" aria-live="assertive"></div>
+    <!-- ============== D3: Row, Column and Null Spaces ============== -->
+    <section id="panel-d3" class="panel" data-title="Row, Column and Null Spaces" aria-labelledby="d3-title" hidden>
+      <header class="panel-head">
+        <h2 id="d3-title"><span class="tab-code">D3</span> Row, Column and Null Spaces</h2>
+        <p class="lede">
+          Enter any <var>m</var> × <var>n</var> matrix <var>A</var>. The solver reduces it to reduced row echelon form,
+          then finds bases for the row space, column space and null space of <var>A</var>, its rank and nullity.
+        </p>
+      </header>
 
-      <div class="actions">
-        <button type="submit" id="solve" class="button primary">Solve</button>
-        <span id="solve-hint" class="hint-inline"></span>
-      </div>
-    </form>
+      <form id="d3-form" class="input-panel" novalidate aria-label="Row, column and null space input">
+        <div class="controls">
+          <label class="field">
+            <span class="field-label">Rows (m)</span>
+            <select id="d3-rows">
+              <option>1</option><option>2</option><option>3</option>
+              <option selected>4</option><option>5</option><option>6</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Columns (n)</span>
+            <select id="d3-cols">
+              <option>1</option><option>2</option><option>3</option>
+              <option>4</option><option selected>5</option><option>6</option>
+            </select>
+          </label>
+          <button type="button" id="d3-example" class="button secondary">Load example</button>
+          <button type="button" id="d3-clear" class="button secondary">Clear</button>
+        </div>
 
-    <section id="results" class="results" aria-labelledby="results-heading" hidden>
-      <h2 id="results-heading" tabindex="-1">Solution</h2>
-      <div id="results-body"></div>
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block">
+              <span class="entry-label" id="d3-label-a">A</span>
+              <div class="bracket"><div id="d3-grid-a" class="grid" role="group" aria-labelledby="d3-label-a"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">
+          Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>).
+        </p>
+        <div id="d3-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="d3-solve" class="button primary">Find bases</button>
+          <span id="d3-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="d3-results" class="results" aria-labelledby="d3-results-heading" hidden>
+        <h2 id="d3-results-heading" tabindex="-1">Solution</h2>
+        <div id="d3-body"></div>
+      </section>
+
+      <p class="method-note">
+        Method: Anton, <cite>Elementary Linear Algebra</cite>, 10th ed., §4.7 — Gauss–Jordan elimination to the reduced row echelon form
+        <var>R</var>; row space from the nonzero rows of <var>R</var>, column space from the pivot columns of <var>A</var>,
+        null space from the solutions of <var>Rx</var> = <var>0</var>.
+      </p>
     </section>
   </main>
 
   <footer class="page footer">
-    <p>
-      Method: Anton, <cite>Elementary Linear Algebra</cite>, 10th ed. — reduce <var>A</var> to row echelon form <var>U</var>
-      with leading 1s, using no row interchanges. <var>L</var> holds each pivot on its diagonal and each eliminated value below it.
-      <a href="tests.html">Run the tests</a>.
-    </p>
+    <p><a href="tests.html">Run the tests</a></p>
   </footer>
 
   <script src="fraction.js"></script>
+  <script src="rowreduce.js"></script>
   <script src="lu.js"></script>
+  <script src="spaces.js"></script>
+  <script src="render.js"></script>
+  <script src="tab-b3.js"></script>
+  <script src="tab-d3.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
