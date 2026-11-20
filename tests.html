@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tests — LU Decomposition Solver</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .t-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    .t-table th, .t-table td { text-align: left; vertical-align: top; padding: var(--s1); border-bottom: 1px solid var(--line-soft); }
+    .t-table td:first-child { font-weight: 700; white-space: nowrap; }
+    .t-table code { font-weight: 400; overflow-wrap: anywhere; }
+    .t-fail td { background: var(--tint-strong); }
+    #summary { font-size: var(--text-lg); font-weight: 700; margin: var(--s3) 0; }
+    #summary[data-status="pass"] { color: var(--accent); }
+    .t-wrap { overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <h1>Tests — LU Decomposition Solver</h1>
+    <p class="lede">Runs the AMAT 105 Review &amp; Exercises Problem A cases and edge cases in this browser. Every comparison is exact.</p>
+    <p id="summary" data-status="running" role="status">Running…</p>
+    <div class="t-wrap">
+      <table class="t-table">
+        <thead><tr><th>Result</th><th>Test</th><th>Expected</th><th>Got</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+    <p class="hint"><a href="index.html">Back to the solver</a></p>
+  </main>
+
+  <script src="fraction.js"></script>
+  <script src="lu.js"></script>
+  <script>
+    (function () {
+      "use strict";
+      const rows = document.getElementById("rows");
+      let pass = 0, fail = 0;
+
+      const show = (v) => Array.isArray(v) ? "[" + v.map(show).join(", ") + "]" : String(v);
+
+      function record(name, ok, expected, got) {
+        ok ? pass++ : fail++;
+        const tr = document.createElement("tr");
+        if (!ok) tr.className = "t-fail";
+        [ok ? "PASS" : "FAIL", name, expected, got].forEach((t, i) => {
+          const td = document.createElement("td");
+          if (i >= 2) { const c = document.createElement("code"); c.textContent = t; td.appendChild(c); }
+          else td.textContent = t;
+          tr.appendChild(td);
+        });
+        rows.appendChild(tr);
+      }
+
+      function eq(name, got, expected) {
+        const g = show(got), e = show(expected);
+        record(name, g === e, e, g);
+      }
+
+      function test(name, fn) {
+        try { fn(); } catch (err) { record(name, false, "no exception", "threw: " + err.message); }
+      }
+
+      const F = (s) => Fraction.parse(s);
+      const A = [[2, -1, 3], [1, -3, -2], [3, 2, -1]];
+
+      /* --- Fraction --- */
+      test("Fraction reduces and keeps sign in numerator", () => {
+        eq("6/-8 → -3/4", new Fraction(6n, -8n).toString(), "-3/4");
+        eq("0/-5 → 0", new Fraction(0n, -5n).toString(), "0");
+        eq("1/3 + 1/6 = 1/2", F("1/3").add(F("1/6")).toString(), "1/2");
+        eq("(-2/5)·(-5/2) = 1", F("-2/5").mul(F("-5/2")).toString(), "1");
+        eq("1/3 − 1/3 = 0", F("1/3").sub(F("1/3")).toString(), "0");
+        eq("(3/4) ÷ (-9/8) = -2/3", F("3/4").div(F("-9/8")).toString(), "-2/3");
+      });
+      test("Fraction.parse accepts integers, decimals, fractions", () => {
+        eq("parse '0.25'", F("0.25").toString(), "1/4");
+        eq("parse '-.5'", F("-.5").toString(), "-1/2");
+        eq("parse ' -3/4 '", F(" -3/4 ").toString(), "-3/4");
+        eq("parse '−7' (Unicode minus)", F("−7").toString(), "-7");
+        eq("parse '0.1' is exactly 1/10 (no float)", F("0.1").toString(), "1/10");
+      });
+      test("Fraction.parse rejects bad input", () => {
+        ["abc", "1/0", "1.2.3", "", "2/3/4", "1e3"].forEach((s) => {
+          let threw = false;
+          try { F(s); } catch (e) { threw = true; }
+          record("parse rejects '" + s + "'", threw, "error", threw ? "error" : "accepted");
+        });
+      });
+
+      /* --- Problem A: decomposition --- */
+      test("Problem A: L and U", () => {
+        const lu = LU.luDecompose(A);
+        eq("decomposition succeeds", lu.ok, true);
+        eq("L", lu.L.map((r) => r.map(String)), [["2", "0", "0"], ["1", "-5/2", "0"], ["3", "7/2", "-52/5"]]);
+        eq("U", lu.U.map((r) => r.map(String)), [["1", "-1/2", "3/2"], ["0", "1", "7/5"], ["0", "0", "1"]]);
+        eq("row operations, in order", lu.steps.map((s) => s.text),
+          ["R₁ → (1/2)R₁", "R₂ → R₂ − R₁", "R₃ → R₃ − 3R₁", "R₂ → (−2/5)R₂", "R₃ → R₃ − (7/2)R₂", "R₃ → (−5/52)R₃"]);
+        eq("LU = A", LU.matricesEqual(LU.multiply(lu.L, lu.U), A), true);
+      });
+
+      /* --- Problem A with b = [9, 0, -1] --- */
+      test("Problem A, b = [9, 0, −1]", () => {
+        const r = LU.solve(A, [9, 0, -1]);
+        eq("y (b = [9, 0, −1])", r.forward.y.map(String), ["9/2", "9/5", "2"]);
+        eq("x (b = [9, 0, −1])", r.back.x.map(String), ["1", "-1", "2"]);
+        eq("Ax = b (b = [9, 0, −1])", r.check.axEqualsB, true);
+      });
+
+      /* --- Problem A.5 with b = [4, 3, 0] --- */
+      test("Problem A.5, b = [4, 3, 0]", () => {
+        const r = LU.solve(A, [4, 3, 0]);
+        eq("y (b = [4, 3, 0])", r.forward.y.map(String), ["2", "-2/5", "23/52"]);
+        eq("x (b = [4, 3, 0])", r.back.x.map(String), ["43/52", "-53/52", "23/52"]);
+        eq("Ax = b (b = [4, 3, 0])", r.check.axEqualsB, true);
+      });
+
+      /* --- Edge cases --- */
+      test("Zero pivot, invertible A (needs a row exchange)", () => {
+        const r = LU.luDecompose([[0, 1], [1, 0]]);
+        eq("fails without crashing", [r.ok, r.reason, r.column], [false, "zero-pivot", 0]);
+        eq("reports A is invertible", r.singular, false);
+      });
+      test("Zero pivot appears mid-way", () => {
+        const r = LU.luDecompose([[1, 2, 3], [2, 4, 5], [1, 3, 4]]);
+        eq("stops at column 2", [r.ok, r.column, r.steps.length], [false, 1, 3]);
+      });
+      test("Singular A", () => {
+        const r = LU.luDecompose([[1, 2], [2, 4]]);
+        eq("fails, flagged singular", [r.ok, r.singular, String(r.det)], [false, true, "0"]);
+      });
+      test("Non-square A is rejected", () => {
+        const r = LU.luDecompose([[1, 2, 3], [4, 5, 6]]);
+        eq("reason", [r.ok, r.reason], [false, "not-square"]);
+      });
+      test("5×5 with fractional input still satisfies LU = A and Ax = b", () => {
+        const M = [["2", "1/2", "0", "1", "-3"], ["4", "3", "1", "0", "2"], ["-2", "0.5", "5", "1", "1"],
+                   ["6", "1", "2", "7", "0"], ["1", "-1", "3", "2", "4/3"]].map((r) => r.map(F));
+        const b = ["1", "0", "-2", "3", "1/7"].map(F);
+        const r = LU.solve(M, b);
+        eq("decomposition succeeds", r.lu.ok, true);
+        eq("LU = A", r.check.luEqualsA, true);
+        eq("Ax = b", r.check.axEqualsB, true);
+        eq("U has 1s on its diagonal", r.lu.U.map((row, i) => String(row[i])), ["1", "1", "1", "1", "1"]);
+      });
+
+      const s = document.getElementById("summary");
+      s.textContent = fail === 0 ? "All " + pass + " checks passed." : fail + " of " + (pass + fail) + " checks failed.";
+      s.dataset.status = fail === 0 ? "pass" : "fail";
+      s.dataset.pass = pass;
+      s.dataset.fail = fail;
+    })();
+  </script>
+</body>
+</html>

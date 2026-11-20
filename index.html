@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LU Decomposition Solver — AMAT 105</title>
+  <meta name="description" content="Step-by-step LU decomposition with exact fractions, following Anton's Elementary Linear Algebra.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <header class="intro">
+      <h1>LU Decomposition Solver — AMAT 105</h1>
+      <p class="lede">
+        Enter a square matrix <var>A</var> and a vector <var>b</var>. The solver writes <var>A</var> = <var>LU</var>
+        using Anton’s method, then solves <var>Ly</var> = <var>b</var> and <var>Ux</var> = <var>y</var>.
+        Every number is an exact fraction.
+      </p>
+    </header>
+
+    <form id="input-form" class="input-panel" novalidate aria-labelledby="input-heading">
+      <h2 id="input-heading" class="visually-hidden">Input</h2>
+
+      <div class="controls">
+        <label class="field">
+          <span class="field-label">Size of A</span>
+          <select id="size" name="size">
+            <option value="2">2 × 2</option>
+            <option value="3" selected>3 × 3</option>
+            <option value="4">4 × 4</option>
+            <option value="5">5 × 5</option>
+          </select>
+        </label>
+        <button type="button" id="load-example" class="button secondary">Load example</button>
+        <button type="button" id="clear" class="button secondary">Clear</button>
+      </div>
+
+      <div class="entry-wrap">
+        <div class="entry">
+          <div class="entry-block">
+            <span class="entry-label" id="label-a">A</span>
+            <div class="bracket"><div id="grid-a" class="grid" role="group" aria-labelledby="label-a"></div></div>
+          </div>
+          <div class="entry-block">
+            <span class="entry-label" id="label-b">b</span>
+            <div class="bracket"><div id="grid-b" class="grid grid-b" role="group" aria-labelledby="label-b"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="hint">
+        Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>).
+        Leave <var>b</var> empty to find only <var>L</var> and <var>U</var>.
+      </p>
+
+      <div id="message" class="message" role="alert" aria-live="assertive"></div>
+
+      <div class="actions">
+        <button type="submit" id="solve" class="button primary">Solve</button>
+        <span id="solve-hint" class="hint-inline"></span>
+      </div>
+    </form>
+
+    <section id="results" class="results" aria-labelledby="results-heading" hidden>
+      <h2 id="results-heading" tabindex="-1">Solution</h2>
+      <div id="results-body"></div>
+    </section>
+  </main>
+
+  <footer class="page footer">
+    <p>
+      Method: Anton, <cite>Elementary Linear Algebra</cite>, 10th ed. — reduce <var>A</var> to row echelon form <var>U</var>
+      with leading 1s, using no row interchanges. <var>L</var> holds each pivot on its diagonal and each eliminated value below it.
+      <a href="tests.html">Run the tests</a>.
+    </p>
+  </footer>
+
+  <script src="fraction.js"></script>
+  <script src="lu.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
