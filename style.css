@@ -73,7 +73,8 @@ h2:focus { outline: none; }
 
 .intro { margin-bottom: var(--s4); }
 .lede { margin-top: var(--s1); color: var(--ink-muted); }
-.demo-note { margin-top: var(--s1); font-size: var(--text-sm); font-weight: 600; }
+.site-footer { padding-top: 0; }
+.site-footer p { padding-top: var(--s3); border-top: 1px solid var(--line-soft); color: var(--ink-muted); font-size: var(--text-sm); }
 
 /* ---------- Input panel ---------- */
 
@@ -347,15 +348,6 @@ a.tab[aria-current="page"]:hover { background: var(--tint); }
 .panel-head { margin-bottom: var(--s3); }
 .panel-head h2 { margin-bottom: var(--s1); }
 .panel-head .tab-code { margin-right: var(--s1); }
-
-.method-note {
-  margin-top: var(--s6);
-  padding-top: var(--s3);
-  border-top: 1px solid var(--line-soft);
-  color: var(--ink-muted);
-  font-size: var(--text-sm);
- 
-}
 
 /* ---------- D3 pieces ---------- */
 

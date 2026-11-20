@@ -6,14 +6,13 @@
   <title>Row, Column and Null Spaces — AMAT 105 Solver</title>
   <meta name="description" content="Step-by-step AMAT 105 linear algebra solutions with exact fractions, one tab per slide set.">
   <!-- Bump ?v= on every release so browsers fetch fresh files (GitHub Pages caches for 10 minutes). -->
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <main class="page">
     <header class="intro">
       <h1>AMAT 105 Linear Algebra Solver</h1>
       <p class="lede">Step-by-step solutions with exact fractions, organized by slide set. Each topic has its own link.</p>
-      <p class="demo-note">Demo only. Created by Jana Mei Lascano for AMAT 105 extra credit.</p>
     </header>
 
     <nav class="tabs" aria-label="Topics by slide set">
@@ -84,10 +83,6 @@
         <div id="b3-body"></div>
       </section>
 
-      <p class="method-note">
-        Method: Anton, <cite>Elementary Linear Algebra</cite>, 10th ed. — reduce <var>A</var> to row echelon form <var>U</var>
-        with leading 1s, using no row interchanges. <var>L</var> holds each pivot on its diagonal and each eliminated value below it.
-      </p>
     </section>
 
     <!-- ============== D3: Row, Column and Null Spaces ============== -->
@@ -144,21 +139,20 @@
         <div id="d3-body"></div>
       </section>
 
-      <p class="method-note">
-        Method: Anton, <cite>Elementary Linear Algebra</cite>, 10th ed., §4.7 — Gauss–Jordan elimination to the reduced row echelon form
-        <var>R</var>; row space from the nonzero rows of <var>R</var>, column space from the pivot columns of <var>A</var>,
-        null space from the solutions of <var>Rx</var> = <var>0</var>.
-      </p>
     </section>
   </main>
 
-  <script src="fraction.js?v=3"></script>
-  <script src="rowreduce.js?v=3"></script>
-  <script src="lu.js?v=3"></script>
-  <script src="spaces.js?v=3"></script>
-  <script src="render.js?v=3"></script>
-  <script src="tab-b3.js?v=3"></script>
-  <script src="tab-d3.js?v=3"></script>
-  <script src="app.js?v=3"></script>
+  <footer class="page site-footer">
+    <p>Demo only. Created by Jana Mei Lascano for AMAT 105 extra credit.</p>
+  </footer>
+
+  <script src="fraction.js?v=5"></script>
+  <script src="rowreduce.js?v=5"></script>
+  <script src="lu.js?v=5"></script>
+  <script src="spaces.js?v=5"></script>
+  <script src="render.js?v=5"></script>
+  <script src="tab-b3.js?v=5"></script>
+  <script src="tab-d3.js?v=5"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>
