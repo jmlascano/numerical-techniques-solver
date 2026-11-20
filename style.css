@@ -57,7 +57,7 @@ h1, h2, h3 { line-height: 1.25; margin: 0; font-weight: 700; }
 h1 { font-size: var(--text-xl); }
 h2 { font-size: var(--text-xl); margin-bottom: var(--s3); }
 h3 { font-size: var(--text-lg); margin-bottom: var(--s2); }
-p { margin: 0; }
+p { margin: 0; text-wrap: pretty; }
 var, cite { font-style: normal; font-weight: 600; }
 code { font-family: var(--font); font-weight: 600; font-variant-numeric: tabular-nums; }
 a { color: var(--accent); text-underline-offset: 2px; }
@@ -72,7 +72,7 @@ h2:focus { outline: none; }
 }
 
 .intro { margin-bottom: var(--s4); }
-.lede { margin-top: var(--s1); max-width: 64ch; color: var(--ink-muted); }
+.lede { margin-top: var(--s1); color: var(--ink-muted); }
 .demo-note { margin-top: var(--s1); font-size: var(--text-sm); font-weight: 600; }
 
 /* ---------- Input panel ---------- */
@@ -154,7 +154,7 @@ select:disabled,
 .bracket::before, .m-bracket::before { left: 0; border-right: 0; }
 .bracket::after, .m-bracket::after { right: 0; border-left: 0; }
 
-.hint { margin-top: var(--s2); font-size: var(--text-sm); color: var(--ink-muted); max-width: 64ch; }
+.hint { margin-top: var(--s2); font-size: var(--text-sm); color: var(--ink-muted); }
 .hint code { color: var(--ink); }
 
 .message { display: none; }
@@ -221,7 +221,7 @@ select:disabled,
 
 .block { padding-top: var(--s4); margin-top: var(--s4); border-top: 1px solid var(--line-soft); }
 .block:first-child { margin-top: 0; }
-.block-intro { color: var(--ink-muted); margin-bottom: var(--s2); max-width: 64ch; }
+.block-intro { color: var(--ink-muted); margin-bottom: var(--s2); }
 
 .scroll-x { overflow-x: auto; max-width: 100%; }
 
@@ -296,7 +296,7 @@ select:disabled,
 .verdict { font-weight: 700; margin-top: var(--s1); }
 
 .block-fail { border-top: 2px solid var(--ink); }
-.fail-text { font-weight: 600; max-width: 64ch; margin-bottom: var(--s2); }
+.fail-text { font-weight: 600; margin-bottom: var(--s2); }
 
 
 /* ---------- Phone ---------- */
@@ -354,7 +354,7 @@ a.tab[aria-current="page"]:hover { background: var(--tint); }
   border-top: 1px solid var(--line-soft);
   color: var(--ink-muted);
   font-size: var(--text-sm);
-  max-width: 80ch;
+ 
 }
 
 /* ---------- D3 pieces ---------- */
