@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Row, Column and Null Spaces — AMAT 105 Solver</title>
+  <title>Diagonalization and Cayley–Hamilton — AMAT 105 Solver</title>
   <meta name="description" content="Step-by-step AMAT 105 linear algebra solutions with exact fractions, one tab per slide set.">
   <!-- Bump ?v= on every release so browsers fetch fresh files (GitHub Pages caches for 10 minutes). -->
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
   <main class="page">
@@ -26,8 +26,8 @@
         <li><a class="tab" href="#d2" data-topic="d2"><span class="tab-name">Coordinates and Bases</span></a></li>
         <li><a class="tab" href="#d3" data-topic="d3"><span class="tab-name">Row, Column and Null Spaces</span></a></li>
         <li><a class="tab" href="#d4" data-topic="d4"><span class="tab-name">Linear Transformations</span></a></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Eigenvalues and Eigenvectors</span><span class="tab-status">Planned</span></span></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Diagonalization and Cayley–Hamilton</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#e" data-topic="e"><span class="tab-name">Eigenvalues and Eigenvectors</span></a></li>
+        <li><a class="tab" href="#e2" data-topic="e2"><span class="tab-name">Diagonalization and Cayley–Hamilton</span></a></li>
       </ul>
     </nav>
 
@@ -587,6 +587,99 @@
         <div id="d4-body"></div>
       </section>
     </section>
+
+    <!-- ================= E: Eigenvalues and Eigenvectors ================= -->
+    <section id="panel-e" class="panel" data-title="Eigenvalues and Eigenvectors" aria-labelledby="e-title" hidden>
+      <header class="panel-head">
+        <h2 id="e-title">Eigenvalues and Eigenvectors</h2>
+        <p class="lede">
+          Enter a square matrix <var>A</var>. The solver expands det(λIₙ − <var>A</var>) by cofactors, factors the characteristic
+          polynomial exactly, and finds a basis for each eigenspace. It also gives the eigenvalues of <var>A</var>ᵏ and says whether <var>A</var> is invertible.
+        </p>
+      </header>
+
+      <form id="e-form" class="input-panel" novalidate aria-label="Eigenvalues input">
+        <div class="controls">
+          <label class="field"><span class="field-label">Size of A</span><select id="e-size"></select></label>
+          <label class="field" id="e-k-field">
+            <span class="field-label">Power k</span>
+            <input type="text" id="e-k" class="cell" autocomplete="off" spellcheck="false" inputmode="numeric" aria-label="Power k">
+          </label>
+          <button type="button" id="e-example" class="button secondary">Load example</button>
+          <button type="button" id="e-clear" class="button secondary">Clear</button>
+        </div>
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block">
+              <span class="entry-label" id="e-label-a">A</span>
+              <div class="bracket"><div id="e-grid-a" class="grid" role="group" aria-labelledby="e-label-a"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>). k is a whole number from 1 to 50.</p>
+        <div id="e-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="e-solve" class="button primary">Find eigenvalues</button>
+          <span id="e-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="e-results" class="results" aria-labelledby="e-results-heading" hidden>
+        <h2 id="e-results-heading" tabindex="-1">Solution</h2>
+        <div id="e-body"></div>
+      </section>
+    </section>
+
+    <!-- ============ E2: Diagonalization and Cayley–Hamilton ============ -->
+    <section id="panel-e2" class="panel" data-title="Diagonalization and Cayley–Hamilton" aria-labelledby="e2-title" hidden>
+      <header class="panel-head">
+        <h2 id="e2-title">Diagonalization and Cayley–Hamilton</h2>
+        <p class="lede">
+          Diagonalize <var>A</var> as P⁻¹<var>A</var>P = D and compute <var>A</var>ᵏ = PDᵏP⁻¹, or verify the Cayley–Hamilton theorem
+          p(<var>A</var>) = 0 and use it to find <var>A</var>ᵏ and <var>A</var>⁻¹.
+        </p>
+      </header>
+
+      <form id="e2-form" class="input-panel" novalidate aria-label="Diagonalization and Cayley–Hamilton input">
+        <div class="controls">
+          <label class="field">
+            <span class="field-label">Part</span>
+            <select id="e2-part">
+              <option value="diag">Diagonalization</option>
+              <option value="ch">Cayley–Hamilton</option>
+            </select>
+          </label>
+          <label class="field"><span class="field-label">Size of A</span><select id="e2-size"></select></label>
+          <label class="field" id="e2-k-field">
+            <span class="field-label">Power k</span>
+            <input type="text" id="e2-k" class="cell" autocomplete="off" spellcheck="false" inputmode="numeric" aria-label="Power k">
+          </label>
+          <button type="button" id="e2-example" class="button secondary">Load example</button>
+          <button type="button" id="e2-clear" class="button secondary">Clear</button>
+        </div>
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block">
+              <span class="entry-label" id="e2-label-a">A</span>
+              <div class="bracket"><div id="e2-grid-a" class="grid" role="group" aria-labelledby="e2-label-a"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>). k is a whole number from 1 to 50.</p>
+        <div id="e2-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="e2-solve" class="button primary">Diagonalize</button>
+          <span id="e2-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="e2-results" class="results" aria-labelledby="e2-results-heading" hidden>
+        <h2 id="e2-results-heading" tabindex="-1">Solution</h2>
+        <div id="e2-body"></div>
+      </section>
+    </section>
     </div>
     </div>
   </main>
@@ -595,25 +688,31 @@
     <p>Demo only. Created by Jana Mei Lascano for AMAT 105 extra credit.</p>
   </footer>
 
-  <script src="fraction.js?v=9"></script>
-  <script src="rowreduce.js?v=9"></script>
-  <script src="matrix.js?v=9"></script>
-  <script src="spaces.js?v=9"></script>
-  <script src="lu.js?v=9"></script>
-  <script src="systems.js?v=9"></script>
-  <script src="matops.js?v=9"></script>
-  <script src="determinants.js?v=9"></script>
-  <script src="vectorspaces.js?v=9"></script>
-  <script src="lintrans.js?v=9"></script>
-  <script src="render.js?v=9"></script>
-  <script src="tab-ab1.js?v=9"></script>
-  <script src="tab-b2.js?v=9"></script>
-  <script src="tab-b3.js?v=9"></script>
-  <script src="tab-c.js?v=9"></script>
-  <script src="tab-d1.js?v=9"></script>
-  <script src="tab-d2.js?v=9"></script>
-  <script src="tab-d3.js?v=9"></script>
-  <script src="tab-d4.js?v=9"></script>
-  <script src="app.js?v=9"></script>
+  <script src="fraction.js?v=10"></script>
+  <script src="rowreduce.js?v=10"></script>
+  <script src="matrix.js?v=10"></script>
+  <script src="spaces.js?v=10"></script>
+  <script src="lu.js?v=10"></script>
+  <script src="systems.js?v=10"></script>
+  <script src="matops.js?v=10"></script>
+  <script src="determinants.js?v=10"></script>
+  <script src="vectorspaces.js?v=10"></script>
+  <script src="lintrans.js?v=10"></script>
+  <script src="surd.js?v=10"></script>
+  <script src="poly.js?v=10"></script>
+  <script src="eigen.js?v=10"></script>
+  <script src="diagonalization.js?v=10"></script>
+  <script src="render.js?v=10"></script>
+  <script src="tab-ab1.js?v=10"></script>
+  <script src="tab-b2.js?v=10"></script>
+  <script src="tab-b3.js?v=10"></script>
+  <script src="tab-c.js?v=10"></script>
+  <script src="tab-d1.js?v=10"></script>
+  <script src="tab-d2.js?v=10"></script>
+  <script src="tab-d3.js?v=10"></script>
+  <script src="tab-d4.js?v=10"></script>
+  <script src="tab-e.js?v=10"></script>
+  <script src="tab-e2.js?v=10"></script>
+  <script src="app.js?v=10"></script>
 </body>
 </html>

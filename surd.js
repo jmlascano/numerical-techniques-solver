@@ -150,6 +150,19 @@
       return this.isNegative() ? this.neg() : this;
     }
 
+    /*
+     * The exact sign (−1, 0, 1) of the real number a + b√d. When a and b have opposite signs,
+     * compare a² with d·b².
+     */
+    sign() {
+      const sa = this.a.isZero() ? 0 : this.a.isNegative() ? -1 : 1;
+      const sb = this.b.isZero() ? 0 : this.b.isNegative() ? -1 : 1;
+      if (sa === 0) return sb;
+      if (sb === 0 || sa === sb) return sa;
+      const diff = this.a.mul(this.a).sub(new Fraction(this.d).mul(this.b).mul(this.b)); // a² − d·b²
+      return diff.isNegative() ? sb : sa; // |a| < |b|√d: b decides; |a| > |b|√d: a decides (never equal: √d is irrational)
+    }
+
     equals(o) {
       if (!(o instanceof Surd)) o = Surd.of(o, this.d);
       return this.d === o.d && this.a.equals(o.a) && this.b.equals(o.b);
@@ -184,6 +197,20 @@
   };
 
   Surd.squarePart = squarePart;
+
+  /* Exact sign of a Fraction or a Surd. */
+  Surd.signOf = function (x) {
+    if (x instanceof Surd) return x.sign();
+    x = Fraction.from(x);
+    return x.isZero() ? 0 : x.isNegative() ? -1 : 1;
+  };
+
+  /* Compare two real numbers, each a Fraction or a Surd: −1, 0 or 1. */
+  Surd.compare = function (x, y) {
+    if (x instanceof Surd) return x.sub(y).sign();
+    if (y instanceof Surd) return -y.sub(x).sign();
+    return Surd.signOf(Fraction.from(x).sub(y));
+  };
 
   global.Surd = Surd;
   if (typeof module !== "undefined" && module.exports) module.exports = { Surd };

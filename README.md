@@ -8,7 +8,7 @@ A step-by-step linear algebra solver for AMAT 105 (Anton, *Elementary Linear Alg
 
 ## Topics
 
-One tab per slide set, in course order. Each built topic has its own link.
+One tab per slide set, in course order. Every topic is built and has its own link; the site opens on the last one.
 
 | Tab | Topic | Status | Link |
 |---|---|---|---|
@@ -18,10 +18,10 @@ One tab per slide set, in course order. Each built topic has its own link.
 | C | Determinants | Built | `#c` |
 | D1 | Real Vector Spaces | Built | `#d1` |
 | D2 | Coordinates and Bases | Built | `#d2` |
-| D3 | Row, Column and Null Spaces | Built (default) | `#d3` |
+| D3 | Row, Column and Null Spaces | Built | `#d3` |
 | D4 | Linear Transformations | Built | `#d4` |
-| E | Eigenvalues and Eigenvectors | Planned | |
-| E2 | Diagonalization and Cayley–Hamilton | Planned | |
+| E | Eigenvalues and Eigenvectors | Built | `#e` |
+| E2 | Diagonalization and Cayley–Hamilton | Built (default) | `#e2` |
 
 **AB1, Systems of Linear Equations.** Takes the augmented matrix [*A* | *b*] (1 to 6 equations and unknowns), reduces it to row echelon form by Gaussian elimination with one step per row operation, and says whether the system is consistent. An inconsistent system is shown with its 0 = 1 row. Otherwise back-substitution runs equation by equation from the last row up, naming the leading and free variables, and the answer is checked against *A*. Variables are x₁ … xₙ, or x, y, z (w, x, y, z for four unknowns).
 
@@ -44,6 +44,12 @@ One tab per slide set, in course order. Each built topic has its own link.
 
 **D4, Linear Transformations.** T: ℝⁿ → ℝᵐ entered by its standard matrix (polynomials and matrices as coordinate vectors): T from the images of a basis (Thm 4.36) with its standard matrix; kernel and range with rank(T) + nullity(T) = *n* (Thm 4.40) and whether T is one-to-one, onto or an isomorphism; [T](B′, B) from [B′ | T(*u*₁) … T(*u*ₙ)] and the 3-step indirect computation of T(*x*) for an *x* you enter; T₂ ∘ T₁ as A₂A₁; T⁻¹ as A⁻¹ when T is bijective.
 
+**E, Eigenvalues and Eigenvectors.** λIₙ − *A*, det(λIₙ − *A*) by cofactor expansion along row 1, and the characteristic polynomial factored exactly: the rational root test with its candidates and values, synthetic division tables, and the quadratic formula, which can give eigenvalues *a* ± *b*√*d*. Eigenvalues are listed largest first with their algebraic multiplicity (Thm 5.3 is noted for triangular *A*). Each eigenspace comes from row reducing (λ*I* − *A*)*x* = 0, over exact surds when needed, with its dimension and the check *Av* = λ*v*. Complex roots are written exactly (for example 2 ± *i*) and marked as not real. A factor with no rational roots and degree 3 or more is reported plainly instead of with decimals. Also: the eigenvalues of *A*ᵏ (Thm 5.4) and invertibility (Thm 5.6).
+
+**E2, Diagonalization and Cayley–Hamilton.** A Part select chooses one of two:
+- *Diagonalization* follows the slides' procedure: the eigenspace bases, then *P* and *D* (eigenvalues largest first), *P*⁻¹ by Gauss–Jordan (steps behind "Show steps"), and checks that *P*⁻¹*AP* = *D* and *AP* = *PD*. It says when *A* is not diagonalizable, with a table of multiplicities. *A*ᵏ = *PD*ᵏ*P*⁻¹ is checked against direct multiplication.
+- *Cayley–Hamilton* finds p(λ) and *Q*(λ) = adj(λ*I* − *A*) = *Q*₀ + *Q*₁λ + ⋯, checks *Q*(λ)(λ*I* − *A*) = p(λ)*I*, verifies p(*A*) = 0 term by term, writes *A*ᵏ as a combination of *I*, *A*, …, *A*ⁿ⁻¹ by using the characteristic equation repeatedly, and finds *A*⁻¹ = −(1/*c*₀)(*c*₁*I* + ⋯ + *A*ⁿ⁻¹).
+
 All arithmetic is exact. `fraction.js` uses BigInt numerators and denominators and always reduces, so there are no floating-point values anywhere.
 
 ## Files
@@ -61,11 +67,13 @@ All arithmetic is exact. `fraction.js` uses BigInt numerators and denominators a
 | `matops.js` | Matrix arithmetic, inverse by Gauss–Jordan, elementary matrices (B2) |
 | `lu.js` | LU decomposition and substitution (B3) |
 | `vectorspaces.js` | Linear combinations, span, independence (D1); bases, coordinates, reduce/extend, change of basis (D2) |
+| `eigen.js` | Characteristic polynomial, eigenvalues, eigenspaces, powers, invertibility (E) |
+| `diagonalization.js` | Diagonalization, Aᵏ = PDᵏP⁻¹, and Cayley–Hamilton (E2) |
 | `lintrans.js` | Linear transformations: basis images, kernel and range, matrices relative to bases, composition, inverse (D4) |
 | `determinants.js` | Determinants by definition, cofactor expansion and the adjoint (C) |
 | `spaces.js` | Row, column and null space, rank and nullity (D3) |
 | `render.js` | Shared rendering: matrices, step lists, disclosures, tables, the input grid |
-| `tab-ab1.js`, `tab-b2.js`, `tab-b3.js`, `tab-c.js`, `tab-d1.js`, `tab-d2.js`, `tab-d3.js`, `tab-d4.js` | Input handling and output for each tab |
+| `tab-ab1.js`, `tab-b2.js`, `tab-b3.js`, `tab-c.js`, `tab-d1.js`, `tab-d2.js`, `tab-d3.js`, `tab-d4.js`, `tab-e.js`, `tab-e2.js` | Input handling and output for each tab |
 | `app.js` | Tabs and hash routing |
 | `tests.html` | Open it in a browser to run every test case and see pass/fail |
 
@@ -90,6 +98,8 @@ The tests are for development only. The live site does not link to them, and `te
 - **D1**: *w* = (9, 2, 7) = −3*u* + 2*v*; *z* = (4, −1, 8) is not a combination; (1,1,2), (1,0,1), (2,1,3) do not span ℝ³; *v*₁ + *v*₂ − 2*v*₃ = 0 for {(1,−2,3), (5,6,−1), (3,2,1)}.
 - **D2**: (5, −1, 9) → (1, −1, 2) and (−1, 3, 2) → (11, 31, 7); extending {(−1,2,3), (1,−2,−2)} with *e*₁; both change-of-basis examples (ℝ² and ℝ³), including conversion and back.
 - **D4**: T(2, −3, 5) = (9, 23) and its standard matrix; Anton Example 2's [T](B′, B); T(*p*) = *x*·*p*(*x*) from P₂ to P₃; kernel and range of the D3 Test 1 matrix; composition and inverse.
+- **E**: the five eigenvalue cases, including the surd eigenvalues 2 ± √3 with exact eigenvectors, the triangular matrix and its A⁹, class problem 6 (no rational roots, det = −17), and complex roots shown as 2 ± *i*.
+- **E2**: diagonalization (D = diag(2, 2, 1); a non-diagonalizable matrix; A²⁵ = A; the surd case with P⁻¹AP = D exactly) and the Cayley–Hamilton illustration (Q(λ), p(A) = 0, A⁴ = 145A + 54I, A⁻¹ = (1/2)(A − 5I), and the 3 × 3 check).
 - **B3**, from AMAT 105 Review & Exercises Problem A: *L*, *U*, the row operations, and both right-hand sides (*b* = [9, 0, −1] → *x* = [1, −1, 2]; *b* = [4, 3, 0] → *x* = [43/52, −53/52, 23/52]), plus zero pivots, a singular matrix, and a non-square matrix.
 - **D3 Test 1**, the 4×5 example: RREF, pivot columns 1, 2, 3, all three bases, rank 3, nullity 2.
 - **D3 Test 2**, the B3 matrix: RREF = *I*₃, rank 3, null space {0}.

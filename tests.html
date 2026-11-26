@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
   <title>Tests — AMAT 105 Linear Algebra Solver</title>
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
   <style>
     .t-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
     .t-table th, .t-table td { text-align: left; vertical-align: top; padding: var(--s1); border-bottom: 1px solid var(--line-soft); }
@@ -31,18 +31,20 @@
     <p class="hint"><a href="index.html">Back to the solver</a></p>
   </main>
 
-  <script src="fraction.js?v=9"></script>
-  <script src="surd.js?v=9"></script>
-  <script src="rowreduce.js?v=9"></script>
-  <script src="matrix.js?v=9"></script>
-  <script src="poly.js?v=9"></script>
-  <script src="lu.js?v=9"></script>
-  <script src="spaces.js?v=9"></script>
-  <script src="systems.js?v=9"></script>
-  <script src="matops.js?v=9"></script>
-  <script src="determinants.js?v=9"></script>
-  <script src="vectorspaces.js?v=9"></script>
-  <script src="lintrans.js?v=9"></script>
+  <script src="fraction.js?v=10"></script>
+  <script src="surd.js?v=10"></script>
+  <script src="rowreduce.js?v=10"></script>
+  <script src="matrix.js?v=10"></script>
+  <script src="poly.js?v=10"></script>
+  <script src="lu.js?v=10"></script>
+  <script src="spaces.js?v=10"></script>
+  <script src="systems.js?v=10"></script>
+  <script src="matops.js?v=10"></script>
+  <script src="determinants.js?v=10"></script>
+  <script src="vectorspaces.js?v=10"></script>
+  <script src="lintrans.js?v=10"></script>
+  <script src="eigen.js?v=10"></script>
+  <script src="diagonalization.js?v=10"></script>
   <script>
     (function () {
       "use strict";
@@ -488,6 +490,102 @@
         eq("T⁻¹ has matrix A⁻¹", Dm(Matrix.scale(52, LinTrans.inverse(A).inv.inverse)), [["7", "5", "11"], ["−5", "−11", "7"], ["11", "−7", "−5"]]);
         eq("non-square T has no inverse", LinTrans.inverse([[1, 2, 3]]).ok, false);
         eq("singular T has no inverse", LinTrans.inverse([[1, 2], [2, 4]]).ok, false);
+      });
+
+
+      /* ================= Eigenvalues and Eigenvectors (E) ================= */
+      const eig = (r) => r.eigenvalues.map((e) => D(e.value) + " ×" + e.algebraic);
+      const basisSet = (e) => e.basis.map(Dv).sort();
+      test("E Test 1: A = [[3,0],[8,−1]]", () => {
+        const r = Eigen.analyze([[3, 0], [8, -1]]);
+        eq("p(λ)", [D(r.p), r.factorization.factored], ["λ² − 2λ − 3", "(λ − 3)(λ + 1)"]);
+        eq("eigenvalues (largest first)", eig(r), ["3 ×1", "−1 ×1"]);
+        eq("λ = 3: basis", basisSet(r.eigenvalues[0]), ["(1/2, 1)"]);
+        eq("λ = −1: basis", basisSet(r.eigenvalues[1]), ["(0, 1)"]);
+      });
+      test("E Test 2: A = [[0,0,−2],[1,2,1],[1,0,3]]", () => {
+        const r = Eigen.analyze([[0, 0, -2], [1, 2, 1], [1, 0, 3]]);
+        eq("p(λ)", [D(r.p), r.factorization.factored], ["λ³ − 5λ² + 8λ − 4", "(λ − 1)(λ − 2)²"]);
+        eq("λ = 2: basis (as a set), dimension 2", [basisSet(r.eigenvalues[0]), r.eigenvalues[0].geometric], [["(−1, 0, 1)", "(0, 1, 0)"].sort(), 2]);
+        eq("λ = 1: basis", basisSet(r.eigenvalues[1]), ["(−2, 1, 1)"]);
+        eq("every basis vector satisfies Av = λv", r.eigenvalues.every((e) => e.checks.every(Boolean)), true);
+      });
+      test("E Test 3: triangular, powers, invertibility", () => {
+        const r = Eigen.analyze([[1, 3, 7, 11], [0, F("1/2"), 3, 8], [0, 0, 0, 4], [0, 0, 0, 2]], 9);
+        eq("triangular (Thm 5.3)", r.triangular, "upper");
+        eq("eigenvalues are the diagonal entries", r.eigenvalues.map((e) => D(e.value)).sort(), ["1", "1/2", "0", "2"].sort());
+        eq("eigenvalues of A⁹", r.powers.values.map((v) => D(v.power)).sort(), ["1", "1/512", "0", "512"].sort());
+        eq("not invertible: 0 is an eigenvalue (Thm 5.6)", [r.zeroIsEigenvalue, r.invertible], [true, false]);
+      });
+      test("E Test 4: surd eigenvalues", () => {
+        const A4 = [[0, 1, 0], [0, 0, 1], [4, -17, 8]];
+        const r = Eigen.analyze(A4);
+        eq("p(λ)", [D(r.p), r.factorization.factored], ["λ³ − 8λ² + 17λ − 4", "(λ − 4)(λ² − 4λ + 1)"]);
+        eq("eigenvalues 4, 2 + √3, 2 − √3", r.eigenvalues.map((e) => D(e.value)), ["4", "2 + √3", "2 − √3"]);
+        eq("eigenvector for 4", basisSet(r.eigenvalues[0]), ["(1/16, 1/4, 1)"]);
+        eq("eigenvectors for 2 ± √3", [Dv(r.eigenvalues[1].basis[0]), Dv(r.eigenvalues[2].basis[0])], ["(7 − 4√3, 2 − √3, 1)", "(7 + 4√3, 2 + √3, 1)"]);
+        eq("Av = λv exactly for all three", r.eigenvalues.every((e) => e.checks.every(Boolean)), true);
+      });
+      test("E Test 5: cannot finish exactly (class problem 6)", () => {
+        const r = Eigen.analyze([[-1, 3, 2], [1, 2, -3], [2, 1, -2]]);
+        eq("p(λ)", D(r.p), "λ³ + λ² − 8λ + 17");
+        eq("no rational roots: unsolved, no eigenvalues invented", [r.eigenvalues.length, !!r.unsolved, D(r.unsolved.factor)], [0, true, "λ³ + λ² − 8λ + 17"]);
+        eq("rational root candidates tested", r.factorization.work.tested.map((t) => D(t.r)), ["1", "−1", "17", "−17"]);
+        eq("det(A) = −17", D(r.det), "−17");
+      });
+      test("E: complex eigenvalues shown exactly (Q3)", () => {
+        const r = Eigen.analyze([[1, -2], [1, 3]]);
+        eq("λ² − 4λ + 5 has roots 2 ± i", [D(r.p), r.complex && r.complex.text, r.eigenvalues.length], ["λ² − 4λ + 5", "2 ± i", 0]);
+        eq("1 ± √3·i form", Poly.from([4, -2, 1]).factor().unresolved.complex.text, "1 ± √3·i");
+      });
+
+      /* ================= Diagonalization and Cayley–Hamilton (E2) ================= */
+      test("E2 Diagonalization Test 1", () => {
+        const r = Diagonalization.diagonalize([[0, 0, -2], [1, 2, 1], [1, 0, 3]]);
+        eq("diagonalizable, D = diag(2, 2, 1)", [r.ok, r.diag.map(D)], [true, ["2", "2", "1"]]);
+        eq("columns of P are eigenvectors: AP = PD", Matrix.equals(r.AP, r.PD), true);
+        eq("P⁻¹AP = D exactly, and AP = PD", [r.checkD, r.checkAPPD], [true, true]);
+        eq("P⁻¹ really is the inverse of P", Matrix.equals(Matrix.multiply(r.P, r.Pinv), Matrix.identity(3)), true);
+      });
+      test("E2 Diagonalization Test 2: not diagonalizable", () => {
+        const r = Diagonalization.diagonalize([[1, 0, 0], [1, 2, 0], [-3, 5, 2]]);
+        eq("p(λ) = (λ − 1)(λ − 2)²", r.eigen.factorization.factored, "(λ − 1)(λ − 2)²");
+        eq("λ = 1 basis (1/8, −1/8, 1); λ = 2 only (0, 0, 1)", r.eigen.eigenvalues.map(basisSet), [["(0, 0, 1)"], ["(1/8, −1/8, 1)"]]);
+        eq("2 basis vectors < 3: not diagonalizable", [r.ok, r.reason, r.total], [false, "deficient", 2]);
+      });
+      test("E2 Diagonalization Test 3: A²⁵ = A", () => {
+        const A3 = [[-1, -2, -2], [1, 2, 1], [-1, -1, 0]];
+        const r = Diagonalization.diagonalize(A3, 25);
+        eq("p(λ) = (λ − 1)²(λ + 1)", r.eigen.factorization.factored, "(λ − 1)²(λ + 1)");
+        eq("λ = 1 basis", basisSet(r.eigen.eigenvalues[0]), ["(−1, 0, 1)", "(−1, 1, 0)"]);
+        eq("λ = −1 basis", basisSet(r.eigen.eigenvalues[1]), ["(2, −1, 1)"]);
+        eq("diagonalizable, P⁻¹AP = D", [r.ok, r.checkD], [true, true]);
+        eq("A²⁵ = PD²⁵P⁻¹ = A, checked by direct multiplication", [Matrix.equals(r.powers.Ak, A3), r.powers.check], [true, true]);
+        eq("eigenvalues of A²⁵", r.eigen.eigenvalues.map((e) => D(Eigen.power(e.value, 25)) + " ×" + e.algebraic), ["1 ×2", "−1 ×1"]);
+      });
+      test("E2 Diagonalization Test 4: surds", () => {
+        const r = Diagonalization.diagonalize([[0, 1, 0], [0, 0, 1], [4, -17, 8]], 2);
+        eq("D = diag(4, 2 + √3, 2 − √3)", r.diag.map(D), ["4", "2 + √3", "2 − √3"]);
+        eq("P⁻¹AP = D exactly", r.checkD, true);
+        eq("A² = PD²P⁻¹ is rational and correct", [r.powers.check, Dm(r.powers.Ak)], [true, [["0", "0", "1"], ["4", "−17", "8"], ["32", "−132", "47"]]]);
+      });
+      test("E2 Cayley–Hamilton (class illustration)", () => {
+        const r = Diagonalization.cayleyHamilton([[1, 2], [3, 4]], 4);
+        eq("p(λ)", D(r.p), "λ² − 5λ − 2");
+        eq("A²", Dm(r.powers[2]), [["7", "10"], ["15", "22"]]);
+        eq("p(A) = A² − 5A − 2I = 0", r.checkZero, true);
+        eq("Q(λ) = adj(λI − A) (Q1)", Dm(r.Q), [["λ − 4", "2"], ["3", "λ − 1"]]);
+        eq("Q₀ and Q₁", [Dm(r.Qk[0]), Dm(r.Qk[1])], [[["−4", "2"], ["3", "−1"]], [["1", "0"], ["0", "1"]]]);
+        eq("Q(λ)(λI − A) = p(λ)I", r.checkQ, true);
+        eq("A² = 5A + 2I, A³ = 27A + 10I", [r.reduction.lines[0].split(", so ")[1], r.reduction.lines[1].split(" = ").pop()], ["A² = 5A + 2I", "27A + 10I"]);
+        eq("A⁴ = 145A + 54I", [r.reduction.text, Dm(r.reduction.value), r.reduction.check], ["A⁴ = 145A + 54I", [["199", "290"], ["435", "634"]], true]);
+        eq("A⁻¹ = (1/2)(A − 5I)", [r.inverse.lines[2].split(" = ").slice(0, 2).join(" = "), Dm(r.inverse.value), r.inverse.check], ["A⁻¹ = (1/2)(A − 5I)", [["−2", "1"], ["3/2", "−1/2"]], true]);
+        const A3 = Diagonalization.cayleyHamilton(Diagonalization.cayleyHamilton([[1, 2], [3, 4]], 3).A, 3);
+        eq("A³ = [[37, 54], [81, 118]]", Dm(A3.reduction.value), [["37", "54"], ["81", "118"]]);
+      });
+      test("E2 Cayley–Hamilton 3 × 3 check", () => {
+        const r = Diagonalization.cayleyHamilton([[0, 0, -2], [1, 2, 1], [1, 0, 3]]);
+        eq("p(A) = A³ − 5A² + 8A − 4I = 0", [Diagonalization.comboText(r.coeffs), r.checkZero, r.checkQ], ["A³ − 5A² + 8A − 4I", true, true]);
       });
 
       const s = document.getElementById("summary");

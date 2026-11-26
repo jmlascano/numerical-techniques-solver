@@ -1,12 +1,12 @@
 /*
- * app.js — topic tabs and hash routing (#b3, #d3).
+ * app.js — topic tabs and hash routing (#ab1, #b2, #b3, #c, #d1, #d2, #d3, #d4, #e, #e2).
  * Each built topic is a <section id="panel-…"> in index.html with its own script (tab-*.js).
  * Planned topics are shown in the topic list but are not links.
  */
 (function () {
   "use strict";
 
-  const DEFAULT_TOPIC = "d3"; // the most recently built topic
+  const DEFAULT_TOPIC = "e2"; // the last topic in the course
   const SITE = "AMAT 105 Solver";
 
   const links = Array.from(document.querySelectorAll(".tab-list a[data-topic]"));

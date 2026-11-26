@@ -289,7 +289,12 @@
         const q = { a, b, c, disc, sqrtDisc: null, roots: [] };
         work.quadratic = q;
         if (disc.isNegative()) {
-          unresolved = { poly: p, reason: "complex" };
+          // Complex pair re ± im·i, written exactly (CONTEXT-v3 Q3: shown, marked as not real).
+          const twoA = a.mul(new Fraction(2n));
+          const re = b.neg().div(twoA);
+          const s = Surd.sqrt(disc.neg());
+          const im = s instanceof Surd ? new Surd(Fraction.ZERO, s.b.div(twoA.abs()), s.d) : s.div(twoA.abs());
+          unresolved = { poly: p, reason: "complex", complex: { re, im, text: complexText(re, im) } };
         } else {
           const s = Surd.sqrt(disc);
           q.sqrtDisc = s;
@@ -329,6 +334,16 @@
     }
   }
 
+  /* "1 ± 2i", "±i", "2 ± √3·i", "−1/2 ± (1/2)i" */
+  function complexText(re, im) {
+    let imText;
+    if (im instanceof Surd) imText = im.toDisplay() + "·i";
+    else if (im.isOne()) imText = "i";
+    else if (im.isInteger()) imText = im.toDisplay() + "i";
+    else imText = "(" + im.toDisplay() + ")i";
+    return (re.isZero() ? "" : re.toDisplay() + " ") + "±" + (re.isZero() ? "" : " ") + imText;
+  }
+
   function formatFactored(lead, factors, unresolved) {
     let out = lead.isOne() ? "" : lead.equals(Fraction.ONE.neg()) ? "−" : lead.isInteger() && !lead.isNegative() ? lead.toDisplay() : "(" + lead.toDisplay() + ")";
     const all = factors.map((f) => ({ poly: f.poly, multiplicity: f.multiplicity }));
@@ -350,6 +365,7 @@
   };
 
   Poly.sup = sup;
+  Poly.complexText = complexText;
 
   global.Poly = Poly;
   if (typeof module !== "undefined" && module.exports) module.exports = { Poly };

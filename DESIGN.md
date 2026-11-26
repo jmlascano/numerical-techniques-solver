@@ -55,6 +55,8 @@ Each tab has exactly one primary button:
 | Coordinates and Bases | Compute |
 | Row, Column and Null Spaces | Find bases |
 | Linear Transformations | Compute |
+| Eigenvalues and Eigenvectors | Find eigenvalues |
+| Diagonalization and Cayley–Hamilton | Diagonalize, or Verify Cayley–Hamilton (the label follows the Part select; only one primary button exists) |
 
 All buttons and inputs are at least 48px tall.
 
@@ -65,7 +67,7 @@ None. The one exception: after Solve, the page scrolls to the solution (smoothly
 ## Layout
 
 - Topic list: one entry per slide set, in course order (Systems of Linear Equations → … → Eigenvalues and Eigenvectors → Diagonalization and Cayley–Hamilton), with no slide codes shown. Wider than 800px it is a 232px side column to the left of the content that stays in view while scrolling (sticky). At 800px and below it becomes a row above the content that scrolls sideways inside itself, with 168px entries so the next one peeks in; the active topic is centered in that row.
-- Routing: `#ab1`, `#b2`, `#b3`, `#c`, `#d1`, `#d2`, `#d3`, `#d4`. An unknown or planned hash falls back to the default, D3.
+- Routing: `#ab1`, `#b2`, `#b3`, `#c`, `#d1`, `#d2`, `#d3`, `#d4`, `#e`, `#e2`. An unknown hash falls back to the default, Diagonalization and Cayley–Hamilton (`#e2`). Every topic is built, so no "Planned" entries remain (the style stays in style.css for future topics).
 - Pivot columns (D3) use the same accent bold as the changed row in each step.
 - Equations that hold several matrices, such as the parametric vector form, wrap on a phone, and a coefficient always stays with its vector ("+ t [v]").
 - Max width 1200px (side column + content). In each tab, the input comes first, then the solution.
@@ -75,6 +77,9 @@ None. The one exception: after Solve, the page scrolls to the solution (smoothly
   - Determinants order: depends on the method. Definition: the table of permutations → the sum. Cofactors: A with the chosen row or column in blue → each cofactor with its minor worked out (nested for 4 × 4) → the sum. Adjoint: cofactors → C → adj(A) → A·adj(A) = det(A)I → A⁻¹ and AA⁻¹ = I. Each ends with "The determinant".
   - Real Vector Spaces, Coordinates and Bases, Linear Transformations: a "Question" or "Task" select shows only the inputs that task needs; vectors (bases, images) are entered as the columns of a grid. Order: the matrix to reduce → its row operations → R (pivot columns in blue when they matter) → the conclusion, in a failure block when the answer is "no" → the answer block → a check.
   - Notation without subscript letters: [v](B) is the coordinate vector of v relative to B, P(B′→B) the transition matrix from B′ to B, and [T](B′, B) the matrix of T relative to B and B′. Each panel's intro defines it, and every matrix is labeled with both bases.
+  - Eigenvalues and Eigenvectors order: λIₙ − A → det(λIₙ − A) by cofactors (each minor and cofactor) → factoring (candidates table, synthetic division tables, quadratic formula) → eigenvalues → each eigenspace (λI − A, row reduction in a closed disclosure, R, basis, dimension, check) → more (powers, invertibility).
+  - Diagonalization order: eigenvalues and eigenspace bases → P and D → P⁻¹ (steps in a closed "Show steps" disclosure) → P⁻¹AP = D and AP = PD → Aᵏ = PDᵏP⁻¹. When A is not diagonalizable, a failure block with a multiplicity table.
+  - Cayley–Hamilton order: p(λ) and its coefficients → Q(λ) = adj(λI − A) and Q₀ … Qₙ₋₁ → Q(λ)(λI − A) = p(λ)I → p(A) = 0 term by term → Aᵏ from the characteristic equation → A⁻¹.
   - D3 order: Gauss–Jordan steps → R and the pivot columns → row space → column space → null space → rank, nullity and the Dimension Theorem → Av = 0.
 - At 480px and below, Solve goes full width, cell width stays 48px, and the `b` column moves below `A` when it does not fit beside it.
 - Undefined operations (sizes that do not match, a singular matrix) are shown as a "Not defined" or "A is singular" block with the existing failure style (2px black top border, bold text), never as a crash.
