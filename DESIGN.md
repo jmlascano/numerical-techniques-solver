@@ -53,7 +53,7 @@ None. The one exception: after Solve, the page scrolls to the solution (smoothly
 
 ## Layout
 
-- Topic list: one entry per slide set, in course order (Systems of Linear Equations → … → Eigenvalues and Eigenvectors), with no slide codes shown. Wider than 800px it is a 232px side column to the left of the content that stays in view while scrolling (sticky). At 800px and below it becomes a row above the content that scrolls sideways inside itself, with 168px entries so the next one peeks in; the active topic is centered in that row.
+- Topic list: one entry per slide set, in course order (Systems of Linear Equations → … → Eigenvalues and Eigenvectors → Diagonalization and Cayley–Hamilton), with no slide codes shown. Wider than 800px it is a 232px side column to the left of the content that stays in view while scrolling (sticky). At 800px and below it becomes a row above the content that scrolls sideways inside itself, with 168px entries so the next one peeks in; the active topic is centered in that row.
 - Routing: `#b3`, `#d3`. An unknown or planned hash falls back to the default, D3.
 - Pivot columns (D3) use the same accent bold as the changed row in each step.
 - Equations that hold several matrices, such as the parametric vector form, wrap on a phone, and a coefficient always stays with its vector ("+ t [v]").

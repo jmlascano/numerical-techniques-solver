@@ -21,6 +21,7 @@ One tab per slide set, in course order. Each built topic has its own link.
 | D3 | Row, Column and Null Spaces | Built (default) | `#d3` |
 | D4 | Linear Transformations | Planned | |
 | E | Eigenvalues and Eigenvectors | Planned | |
+| E2 | Diagonalization and Cayley–Hamilton | Planned | |
 
 **B3, LU Decomposition.** Reduces a square *A* to *U* with leading 1s, using no row interchanges, and lists every row operation with the matrix after it. *L* holds the pivots and the eliminated values, so *A* = *LU*. Then it solves *Ly* = *b* and *Ux* = *y* and checks *LU* = *A* and *Ax* = *b*. It says plainly when a zero pivot stops the method.
 
@@ -40,7 +41,10 @@ All arithmetic is exact. `fraction.js` uses BigInt numerators and denominators a
 | `index.html` | The page: tab bar and one panel per built topic |
 | `style.css` | Styles; tokens are documented in `DESIGN.md` |
 | `fraction.js` | Exact rational arithmetic |
-| `rowreduce.js` | Row operations, their written form (`R₁ ↔ R₃`, `R₂ → (1/3)R₂`, `R₂ → R₂ − 2R₁`), and Gauss–Jordan elimination |
+| `rowreduce.js` | Row operations, their written form (`R₁ ↔ R₃`, `R₂ → (1/3)R₂`, `R₂ → R₂ − 2R₁`), and Gauss–Jordan elimination, over any exact number type (Fraction or Surd) |
+| `surd.js` | Exact numbers a + b√d (for eigenvalues such as 2 ± √3) |
+| `matrix.js` | Shared matrix helpers: products, transpose, identity, cofactor determinant, cofactor matrix, adjoint (entries may be numbers or polynomials) |
+| `poly.js` | Polynomials in λ: arithmetic, synthetic division, factoring over ℚ (rational root test and quadratic formula) |
 | `lu.js` | LU decomposition and substitution (B3) |
 | `spaces.js` | Row, column and null space, rank and nullity (D3) |
 | `render.js` | Shared rendering: matrices, step lists, the input grid |

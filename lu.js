@@ -18,6 +18,7 @@
 
   const Fraction = global.Fraction || require("./fraction.js").Fraction;
   const RR = global.RowReduce || require("./rowreduce.js");
+  const Matrix = global.Matrix || require("./matrix.js");
   const { sub, factor, linear, toMatrix, clone } = RR;
 
   function toVector(b) {
@@ -175,29 +176,9 @@
     return { x, steps };
   }
 
-  function multiply(Ain, Bin) {
-    const A = toMatrix(Ain);
-    const B = toMatrix(Bin);
-    return A.map((row) => B[0].map((_, j) => row.reduce((acc, a, k) => acc.add(a.mul(B[k][j])), Fraction.ZERO)));
-  }
-
-  function multiplyVector(Ain, vin) {
-    const A = toMatrix(Ain);
-    const v = toVector(vin);
-    return A.map((row) => row.reduce((acc, a, k) => acc.add(a.mul(v[k])), Fraction.ZERO));
-  }
-
-  function matricesEqual(Ain, Bin) {
-    const A = toMatrix(Ain);
-    const B = toMatrix(Bin);
-    return A.length === B.length && A.every((row, i) => row.length === B[i].length && row.every((a, j) => a.equals(B[i][j])));
-  }
-
-  function vectorsEqual(ain, bin) {
-    const a = toVector(ain);
-    const b = toVector(bin);
-    return a.length === b.length && a.every((x, i) => x.equals(b[i]));
-  }
+  // Products and comparisons are the shared generic ones (matrix.js).
+  const { multiply, multiplyVector, vectorsEqual } = Matrix;
+  const matricesEqual = Matrix.equals;
 
   /* Full pipeline. b may be null to decompose only. */
   function solve(A, b) {

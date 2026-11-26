@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
-  <title>Tests — LU Decomposition Solver</title>
-  <link rel="stylesheet" href="style.css?v=6">
+  <title>Tests — AMAT 105 Linear Algebra Solver</title>
+  <link rel="stylesheet" href="style.css?v=7">
   <style>
     .t-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
     .t-table th, .t-table td { text-align: left; vertical-align: top; padding: var(--s1); border-bottom: 1px solid var(--line-soft); }
@@ -19,8 +19,8 @@
 </head>
 <body>
   <main class="page">
-    <h1>Tests — LU Decomposition Solver</h1>
-    <p class="lede">Runs the B3 (LU decomposition) and D3 (row, column and null space) test cases and edge cases in this browser. Every comparison is exact.</p>
+    <h1>Tests — AMAT 105 Linear Algebra Solver</h1>
+    <p class="lede">Runs every topic’s test cases, the shared exact-arithmetic code (Fraction, Surd, Poly, Matrix), and edge cases in this browser. Every comparison is exact.</p>
     <p id="summary" data-status="running" role="status">Running…</p>
     <div class="t-wrap">
       <table class="t-table">
@@ -31,10 +31,13 @@
     <p class="hint"><a href="index.html">Back to the solver</a></p>
   </main>
 
-  <script src="fraction.js?v=6"></script>
-  <script src="rowreduce.js?v=6"></script>
-  <script src="lu.js?v=6"></script>
-  <script src="spaces.js?v=6"></script>
+  <script src="fraction.js?v=7"></script>
+  <script src="surd.js?v=7"></script>
+  <script src="rowreduce.js?v=7"></script>
+  <script src="matrix.js?v=7"></script>
+  <script src="poly.js?v=7"></script>
+  <script src="lu.js?v=7"></script>
+  <script src="spaces.js?v=7"></script>
   <script>
     (function () {
       "use strict";
@@ -200,6 +203,98 @@
         const r = Spaces.analyze(M);
         eq("6×6: rank + nullity = 6", r.rank + r.nullity, 6);
         eq("6×6: Av = 0 for every basis vector", r.checks.every((c) => c.isZero), true);
+      });
+
+
+      /* ================= Phase 0: shared exact arithmetic ================= */
+      const D = (x) => x.toDisplay();
+      const Dm = (M) => M.map((r) => (Array.isArray(r) ? r.map(D) : D(r)));
+
+      test("Surd display", () => {
+        eq("2 + √3", D(new Surd(2, 1, 3)), "2 + √3");
+        eq("2 − √3", D(new Surd(2, -1, 3)), "2 − √3");
+        eq("(1/2)√5", D(new Surd(0, F("1/2"), 5)), "(1/2)√5");
+        eq("−√2", D(new Surd(0, -1, 2)), "−√2");
+        eq("7 − 4√3", D(new Surd(7, -4, 3)), "7 − 4√3");
+        eq("rational surd shows as a fraction", D(new Surd(F("-3/4"), 0, 7)), "−3/4");
+      });
+      test("Surd arithmetic", () => {
+        const s = new Surd(2, 1, 3);
+        eq("(2 + √3) + (2 − √3) = 4", D(s.add(s.conj())), "4");
+        eq("(2 + √3)(2 − √3) = 1", D(s.mul(s.conj())), "1");
+        eq("(2 + √3)² = 7 + 4√3", D(s.mul(s)), "7 + 4√3");
+        eq("1 / (2 + √3) = 2 − √3 (by the conjugate)", D(s.reciprocal()), "2 − √3");
+        eq("(1 + √2) / (3 − √2) = 5/7 + (4/7)√2", D(new Surd(1, 1, 2).div(new Surd(3, -1, 2))), "5/7 + (4/7)√2");
+        eq("Surd mixes with Fractions", D(s.sub(F("1/2")).mul(2)), "3 + 2√3");
+        eq("equals", s.equals(new Surd(2, 1, 3)) && !s.equals(s.conj()), true);
+        let threw = false;
+        try { s.add(new Surd(1, 1, 2)); } catch (e) { threw = true; }
+        record("mixing √3 and √2 is refused", threw, "error", threw ? "error" : "accepted");
+      });
+      test("Surd.sqrt (exact square roots)", () => {
+        eq("√12 = 2√3", D(Surd.sqrt(12)), "2√3");
+        eq("√(9/4) = 3/2", D(Surd.sqrt(F("9/4"))), "3/2");
+        eq("√(1/2) = (1/2)√2", D(Surd.sqrt(F("1/2"))), "(1/2)√2");
+      });
+
+      test("Poly arithmetic and display", () => {
+        const p = Poly.from([-4, 8, -5, 1]);
+        eq("display", D(p), "λ³ − 5λ² + 8λ − 4");
+        eq("(λ − 1)(λ − 2)² expands to p", D(Poly.linear(1).mul(Poly.linear(2)).mul(Poly.linear(2))), "λ³ − 5λ² + 8λ − 4");
+        eq("p + (5λ² − 8λ) = λ³ − 4", D(p.add(Poly.from([0, -8, 5]))), "λ³ − 4");
+        eq("fraction coefficients", D(Poly.from([F("1/2"), 0, F("-3/4")])), "−(3/4)λ² + 1/2");
+        eq("p(2) = 0", D(p.evaluate(2)), "0");
+        eq("p(3) = 2", D(p.evaluate(3)), "2");
+        const d = p.divideByLinear(1);
+        eq("synthetic division by (λ − 1): quotient", D(d.quotient), "λ² − 4λ + 4");
+        eq("synthetic division by (λ − 1): bottom row", d.table.bottom.map(String), ["1", "-4", "4", "0"]);
+      });
+      test("Poly.factor over ℚ", () => {
+        const f1 = Poly.from([-4, 8, -5, 1]).factor();
+        eq("λ³ − 5λ² + 8λ − 4", f1.factored, "(λ − 1)(λ − 2)²");
+        eq("  roots with multiplicity", f1.roots.map((r) => D(r.value) + "^" + r.multiplicity), ["1^1", "2^2"]);
+        const f2 = Poly.from([-3, -2, 1]).factor();
+        eq("λ² − 2λ − 3 (quadratic formula)", [f2.factored, f2.work.method], ["(λ − 3)(λ + 1)", "quadratic"]);
+        const f3 = Poly.from([-4, 17, -8, 1]).factor();
+        eq("λ³ − 8λ² + 17λ − 4", f3.factored, "(λ − 4)(λ² − 4λ + 1)");
+        eq("  roots 4, 2 + √3, 2 − √3", f3.roots.map((r) => D(r.value)), ["4", "2 + √3", "2 − √3"]);
+        const f4 = Poly.from([17, -8, 1, 1]).factor();
+        eq("λ³ + λ² − 8λ + 17: no rational roots, unresolved", [f4.roots.length, f4.unresolved && f4.unresolved.reason], [0, "no-rational-roots"]);
+        eq("  every candidate ±1, ±17 tested", f4.work.tested.map((t) => String(t.r)), ["1", "-1", "17", "-17"]);
+        const f5 = Poly.from([1, 0, 1]).factor();
+        eq("λ² + 1: complex roots, unresolved", f5.unresolved && f5.unresolved.reason, "complex");
+        const f6 = Poly.from([-8, 12, -6, 1]).factor();
+        eq("λ³ − 6λ² + 12λ − 8 = (λ − 2)³", f6.factored, "(λ − 2)³");
+        const f7 = Poly.from([0, -1, F("7/2"), F("-7/2"), 1]).factor();
+        eq("fraction coefficients: denominators cleared for the test", [f7.factored, D(f7.work.cleared.multiplier)], ["λ(λ − 1/2)(λ − 2)(λ − 1)", "2"]);
+      });
+
+      test("Matrix: generic determinant, adjoint, products", () => {
+        eq("det of the Problem A matrix = 52", D(Matrix.det(A)), "52");
+        eq("adj of the Problem A matrix", Dm(Matrix.adjoint(A)), [["7", "5", "11"], ["−5", "−11", "7"], ["11", "−7", "−5"]]);
+        eq("A·adj(A) = 52 I", Dm(Matrix.multiply(A, Matrix.adjoint(A))), [["52", "0", "0"], ["0", "52", "0"], ["0", "0", "52"]]);
+        const ex = Matrix.cofactorExpansion(A, "col", 1);
+        eq("cofactor expansion along column 2: cofactors", ex.terms.map((t) => D(t.cofactor)), ["−5", "−11", "7"]);
+        eq("cofactor expansion along column 2: value", D(ex.value), "52");
+        eq("transpose", Dm(Matrix.transpose([[3, 0], [-1, 2], [1, 1]])), [["3", "−1", "1"], ["0", "2", "1"]]);
+      });
+      test("Matrix with polynomial entries: det(λI − A)", () => {
+        const C = Poly.characteristicMatrix([[0, 0, -2], [1, 2, 1], [1, 0, 3]]);
+        eq("λI − A", Dm(C), [["λ", "0", "2"], ["−1", "λ − 2", "−1"], ["−1", "0", "λ − 3"]]);
+        eq("det(λI − A) by cofactors", D(Matrix.det(C)), "λ³ − 5λ² + 8λ − 4");
+        eq("expansion along row 1: cofactors", Matrix.cofactorExpansion(C).terms.map((t) => D(t.cofactor)), ["λ² − 5λ + 6", "λ − 2", "λ − 2"]);
+        eq("adj(λI − A) for [[1,2],[3,4]]", Dm(Matrix.adjoint(Poly.characteristicMatrix([[1, 2], [3, 4]]))), [["λ − 4", "2"], ["3", "λ − 1"]]);
+      });
+      test("Row reduction and null space over Surd (field-generic)", () => {
+        const A4 = [[0, 1, 0], [0, 0, 1], [4, -17, 8]];
+        const lam = new Surd(2, 1, 3);
+        const N = Poly.characteristicMatrix(A4).map((row) => row.map((p) => Surd.of(p.evaluate(lam), 3)));
+        const r = Spaces.analyze(N);
+        eq("(2 + √3)I − A has rank 2", [r.rank, r.nullity], [2, 1]);
+        const v = r.nullSpace.basis[0].vector;
+        eq("eigenvector for 2 + √3", v.map(D), ["7 − 4√3", "2 − √3", "1"]);
+        eq("Av = (2 + √3)v exactly", Matrix.vectorsEqual(Matrix.multiplyVector(Surd.liftMatrix(A4, 3), v), v.map((x) => x.mul(lam))), true);
+        eq("row operations written with surd coefficients", r.reduction.steps[0].text, "R₁ → (2 − √3)R₁");
       });
 
       const s = document.getElementById("summary");

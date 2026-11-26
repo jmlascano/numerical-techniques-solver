@@ -2,6 +2,10 @@
  * rowreduce.js — elementary row operations, their written form, and Gauss–Jordan
  * elimination on any m×n matrix. Shared by lu.js (B3) and spaces.js (D3).
  *
+ * Field-generic: entries may be any exact number type with add, sub, mul, div, neg,
+ * isZero, equals and toDisplay (Fraction, Surd). One and zero are taken from the
+ * entries themselves (x.one() / x.zero() when present, else Fraction).
+ *
  * Operation text uses the course notation:
  *   R₁ ↔ R₃          interchange two rows
  *   R₂ → (1/3)R₂     multiply a row by a nonzero constant
@@ -12,6 +16,21 @@
 
   const Fraction = global.Fraction || require("./fraction.js").Fraction;
 
+  /* ---------- Field helpers ---------- */
+
+  const zeroOf = (x) => (x && typeof x.zero === "function" ? x.zero() : Fraction.ZERO);
+  const oneOf = (x) => (x && typeof x.one === "function" ? x.one() : Fraction.ONE);
+  const isOne = (x) => (typeof x.isOne === "function" ? x.isOne() : x.equals(oneOf(x)));
+  const isNeg = (x) => (typeof x.isNegative === "function" ? x.isNegative() : false);
+  const absOf = (x) => (isNeg(x) ? x.neg() : x);
+  const isPlainInt = (x) => typeof x.isInteger === "function" && x.isInteger() && !isNeg(x);
+  const reciprocal = (x) => oneOf(x).div(x);
+
+  /* Keep field elements as they are; turn integers, BigInts and strings into Fractions. */
+  function lift(x) {
+    return x !== null && typeof x === "object" && typeof x.add === "function" ? x : Fraction.from(x);
+  }
+
   /* ---------- Formatting ---------- */
 
   const SUB = ["₀", "₁", "₂", "₃", "₄", "₅", "₆", "₇", "₈", "₉"];
@@ -21,16 +40,16 @@
     return String(n).split("").map((d) => SUB[Number(d)]).join("");
   }
 
-  /* A coefficient written in front of a symbol: "" for 1, "3", "(1/2)", "(−2/5)". */
+  /* A coefficient written in front of a symbol: "" for 1, "3", "(1/2)", "(−2/5)", "(2 + √3)". */
   function coef(f) {
-    if (f.isOne()) return "";
-    if (f.isInteger() && !f.isNegative()) return f.toDisplay();
+    if (isOne(f)) return "";
+    if (isPlainInt(f)) return f.toDisplay();
     return "(" + f.toDisplay() + ")";
   }
 
   /* A value used as a factor in a product: "3", "(−1)", "(9/2)". */
   function factor(f) {
-    if (f.isInteger() && !f.isNegative()) return f.toDisplay();
+    if (isPlainInt(f)) return f.toDisplay();
     return "(" + f.toDisplay() + ")";
   }
 
@@ -42,9 +61,9 @@
     let out = "";
     terms.forEach(({ c, s }) => {
       if (c.isZero()) return;
-      const term = coef(c.abs()) + s;
-      if (out === "") out = (c.isNegative() ? "−" : "") + term;
-      else out += (c.isNegative() ? " − " : " + ") + term;
+      const term = coef(absOf(c)) + s;
+      if (out === "") out = (isNeg(c) ? "−" : "") + term;
+      else out += (isNeg(c) ? " − " : " + ") + term;
     });
     return out === "" ? "0" : out;
   }
@@ -52,13 +71,13 @@
   const R = (i) => "R" + sub(i + 1);
 
   function scaleText(i, s) {
-    if (s.equals(Fraction.ONE.neg())) return R(i) + " → −" + R(i);
+    if (isOne(s.neg())) return R(i) + " → −" + R(i);
     return R(i) + " → " + coef(s) + R(i);
   }
 
   /* Text for R_t → R_t − m·R_s (written with + when m is negative). */
   function addText(t, m, s) {
-    return R(t) + " → " + R(t) + (m.isNegative() ? " + " : " − ") + coef(m.abs()) + R(s);
+    return R(t) + " → " + R(t) + (isNeg(m) ? " + " : " − ") + coef(absOf(m)) + R(s);
   }
 
   function swapText(i, j) {
@@ -68,7 +87,7 @@
   /* ---------- Matrices and row operations (in place) ---------- */
 
   function toMatrix(A) {
-    return A.map((row) => row.map((x) => Fraction.from(x)));
+    return A.map((row) => row.map(lift));
   }
 
   function clone(M) {
@@ -123,8 +142,8 @@
         record("swap", "forward", swapText(r, p), [r, p]);
       }
       const pivot = W[r][c];
-      if (!pivot.isOne()) {
-        const s = pivot.reciprocal();
+      if (!isOne(pivot)) {
+        const s = reciprocal(pivot);
         scaleRow(W, r, s);
         record("scale", "forward", scaleText(r, s), [r]);
       }
@@ -152,6 +171,13 @@
   }
 
   const RowReduce = {
+    zeroOf,
+    oneOf,
+    isOne,
+    isNeg,
+    absOf,
+    reciprocal,
+    lift,
     sub,
     coef,
     factor,

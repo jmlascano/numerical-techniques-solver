@@ -8,14 +8,15 @@
  *   null space   solve Ax = 0 via Rx = 0; one basis vector per free variable
  *   rank(A) + nullity(A) = n   (Dimension Theorem for Matrices)
  *
- * All arithmetic is exact (Fraction).
+ * All arithmetic is exact and field-generic: Fraction entries, or Surd entries
+ * (for example λI − A when λ = 2 + √3).
  */
 (function (global) {
   "use strict";
 
-  const Fraction = global.Fraction || require("./fraction.js").Fraction;
   const RR = global.RowReduce || require("./rowreduce.js");
-  const { sub, linear, toMatrix } = RR;
+  const Matrix = global.Matrix || require("./matrix.js");
+  const { sub, linear, toMatrix, zeroOf, oneOf } = RR;
 
   /* Parameter names: t; s, t; r, s, t; then t₁, t₂, … for four or more. */
   function paramNames(k) {
@@ -26,10 +27,6 @@
   }
 
   const xName = (j) => "x" + sub(j + 1);
-
-  function multiplyVector(A, v) {
-    return A.map((row) => row.reduce((acc, a, k) => acc.add(a.mul(v[k])), Fraction.ZERO));
-  }
 
   /*
    * Null space from R = rref(A) and its pivot columns.
@@ -64,9 +61,10 @@
       }
     }
 
+    const like = R[0][0];
     const basis = free.map((f, k) => {
-      const v = Array.from({ length: n }, () => Fraction.ZERO);
-      v[f] = Fraction.ONE;
+      const v = Array.from({ length: n }, () => zeroOf(like));
+      v[f] = oneOf(like);
       pivots.forEach((p, i) => {
         v[p] = R[i][f].neg();
       });
@@ -105,7 +103,7 @@
     const nullity = ns.basis.length;
 
     const checks = ns.basis.map(({ param, vector }) => {
-      const product = multiplyVector(A, vector);
+      const product = Matrix.multiplyVector(A, vector);
       return { param, vector, product, isZero: product.every((x) => x.isZero()) };
     });
 
