@@ -6,7 +6,7 @@
   <title>Row, Column and Null Spaces — AMAT 105 Solver</title>
   <meta name="description" content="Step-by-step AMAT 105 linear algebra solutions with exact fractions, one tab per slide set.">
   <!-- Bump ?v= on every release so browsers fetch fresh files (GitHub Pages caches for 10 minutes). -->
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
 </head>
 <body>
   <main class="page">
@@ -22,10 +22,10 @@
         <li><a class="tab" href="#b2" data-topic="b2"><span class="tab-name">Matrices and Matrix Operations</span></a></li>
         <li><a class="tab" href="#b3" data-topic="b3"><span class="tab-name">LU Decomposition</span></a></li>
         <li><a class="tab" href="#c" data-topic="c"><span class="tab-name">Determinants</span></a></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Real Vector Spaces</span><span class="tab-status">Planned</span></span></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Coordinates and Bases</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#d1" data-topic="d1"><span class="tab-name">Real Vector Spaces</span></a></li>
+        <li><a class="tab" href="#d2" data-topic="d2"><span class="tab-name">Coordinates and Bases</span></a></li>
         <li><a class="tab" href="#d3" data-topic="d3"><span class="tab-name">Row, Column and Null Spaces</span></a></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Linear Transformations</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#d4" data-topic="d4"><span class="tab-name">Linear Transformations</span></a></li>
         <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Eigenvalues and Eigenvectors</span><span class="tab-status">Planned</span></span></li>
         <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Diagonalization and Cayley–Hamilton</span><span class="tab-status">Planned</span></span></li>
       </ul>
@@ -309,6 +309,139 @@
       </section>
     </section>
 
+    <!-- ===================== D1: Real Vector Spaces ===================== -->
+    <section id="panel-d1" class="panel" data-title="Real Vector Spaces" aria-labelledby="d1-title" hidden>
+      <header class="panel-head">
+        <h2 id="d1-title">Real Vector Spaces</h2>
+        <p class="lede">
+          Vectors in ℝⁿ, entered as columns. Check whether <var>w</var> is a linear combination of <var>v</var>₁, …, <var>v</var>ₖ,
+          whether the vectors span ℝⁿ, or whether they are linearly independent.
+        </p>
+      </header>
+
+      <form id="d1-form" class="input-panel" novalidate aria-label="Real vector spaces input">
+        <div class="controls">
+          <label class="field field-wide">
+            <span class="field-label">Question</span>
+            <select id="d1-mode">
+              <option value="combination">Is w a linear combination of v₁, …, vₖ?</option>
+              <option value="span">Do v₁, …, vₖ span ℝⁿ?</option>
+              <option value="independence">Are v₁, …, vₖ linearly independent?</option>
+            </select>
+          </label>
+          <label class="field"><span class="field-label">n (vectors in ℝⁿ)</span><select id="d1-n"></select></label>
+          <label class="field"><span class="field-label">k (number of vectors)</span><select id="d1-k"></select></label>
+          <button type="button" id="d1-example" class="button secondary">Load example</button>
+          <button type="button" id="d1-clear" class="button secondary">Clear</button>
+        </div>
+
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block" id="d1-block-v">
+              <span class="entry-label" id="d1-label-v">v₁ … vₖ</span>
+              <div class="bracket"><div id="d1-grid-v" class="grid" role="group" aria-labelledby="d1-label-v"></div></div>
+            </div>
+            <div class="entry-block" id="d1-block-w">
+              <span class="entry-label" id="d1-label-w">w</span>
+              <div class="bracket"><div id="d1-grid-w" class="grid" role="group" aria-labelledby="d1-label-w"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">Each column is one vector: the first column is v₁, the second v₂, and so on. Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>). Function spaces (the Wronskian) are not covered.</p>
+        <div id="d1-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="d1-solve" class="button primary">Check</button>
+          <span id="d1-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="d1-results" class="results" aria-labelledby="d1-results-heading" hidden>
+        <h2 id="d1-results-heading" tabindex="-1">Solution</h2>
+        <div id="d1-body"></div>
+      </section>
+    </section>
+
+    <!-- ===================== D2: Coordinates and Bases ===================== -->
+    <section id="panel-d2" class="panel" data-title="Coordinates and Bases" aria-labelledby="d2-title" hidden>
+      <header class="panel-head">
+        <h2 id="d2-title">Coordinates and Bases</h2>
+        <p class="lede">
+          Test a basis, find coordinates, reduce or extend a set to a basis, or change basis. [<var>v</var>](B) means the
+          coordinate vector of <var>v</var> relative to B, and P(B′→B) is the transition matrix from B′ to B, so [<var>v</var>](B) = P(B′→B)[<var>v</var>](B′).
+        </p>
+      </header>
+
+      <form id="d2-form" class="input-panel" novalidate aria-label="Coordinates and bases input">
+        <div class="controls">
+          <label class="field field-wide">
+            <span class="field-label">Task</span>
+            <select id="d2-mode">
+              <option value="basis">Is S a basis for ℝⁿ?</option>
+              <option value="coords">Coordinates relative to a basis B</option>
+              <option value="extend">Reduce or extend S to a basis</option>
+              <option value="change">Change of basis between B and B′</option>
+            </select>
+          </label>
+          <label class="field"><span class="field-label">n (ℝⁿ)</span><select id="d2-n"></select></label>
+          <label class="field" id="d2-k-field"><span class="field-label">k (vectors in S)</span><select id="d2-k"></select></label>
+          <label class="field field-wide" id="d2-dir-field">
+            <span class="field-label">Direction</span>
+            <select id="d2-dir">
+              <option value="to">Find [x](B) from x</option>
+              <option value="from">Find x from [x](B)</option>
+            </select>
+          </label>
+          <label class="field" id="d2-from-field">
+            <span class="field-label">[v] is given in</span>
+            <select id="d2-from">
+              <option value="B">B</option>
+              <option value="B′">B′</option>
+            </select>
+          </label>
+          <button type="button" id="d2-example" class="button secondary">Load example</button>
+          <button type="button" id="d2-clear" class="button secondary">Clear</button>
+        </div>
+
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block" id="d2-block-s">
+              <span class="entry-label" id="d2-label-s">S</span>
+              <div class="bracket"><div id="d2-grid-s" class="grid" role="group" aria-labelledby="d2-label-s"></div></div>
+            </div>
+            <div class="entry-block" id="d2-block-b">
+              <span class="entry-label" id="d2-label-b">B</span>
+              <div class="bracket"><div id="d2-grid-b" class="grid" role="group" aria-labelledby="d2-label-b"></div></div>
+            </div>
+            <div class="entry-block" id="d2-block-b2">
+              <span class="entry-label" id="d2-label-b2">B′</span>
+              <div class="bracket"><div id="d2-grid-b2" class="grid" role="group" aria-labelledby="d2-label-b2"></div></div>
+            </div>
+            <div class="entry-block" id="d2-block-x">
+              <span class="entry-label" id="d2-label-x">x</span>
+              <div class="bracket"><div id="d2-grid-x" class="grid" role="group" aria-labelledby="d2-label-x"></div></div>
+            </div>
+            <div class="entry-block" id="d2-block-v">
+              <span class="entry-label" id="d2-label-v">[v](B)</span>
+              <div class="bracket"><div id="d2-grid-v" class="grid" role="group" aria-labelledby="d2-label-v"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">Each column of S, B and B′ is one vector. Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>).</p>
+        <div id="d2-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="d2-solve" class="button primary">Compute</button>
+          <span id="d2-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="d2-results" class="results" aria-labelledby="d2-results-heading" hidden>
+        <h2 id="d2-results-heading" tabindex="-1">Solution</h2>
+        <div id="d2-body"></div>
+      </section>
+    </section>
+
     <!-- ============== D3: Row, Column and Null Spaces ============== -->
     <section id="panel-d3" class="panel" data-title="Row, Column and Null Spaces" aria-labelledby="d3-title" hidden>
       <header class="panel-head">
@@ -364,6 +497,96 @@
       </section>
 
     </section>
+
+    <!-- ===================== D4: Linear Transformations ===================== -->
+    <section id="panel-d4" class="panel" data-title="Linear Transformations" aria-labelledby="d4-title" hidden>
+      <header class="panel-head">
+        <h2 id="d4-title">Linear Transformations</h2>
+        <p class="lede">
+          A transformation T: ℝⁿ → ℝᵐ is entered by its standard matrix <var>A</var> (m × n), or by the images of a basis.
+          [<var>T</var>](B′, B) is the matrix of T relative to the bases B of ℝⁿ and B′ of ℝᵐ.
+        </p>
+      </header>
+
+      <form id="d4-form" class="input-panel" novalidate aria-label="Linear transformations input">
+        <div class="controls">
+          <label class="field field-wide">
+            <span class="field-label">Task</span>
+            <select id="d4-mode">
+              <option value="images">T from the images of a basis</option>
+              <option value="kernel">Kernel and range</option>
+              <option value="relative">Matrix of T relative to bases B and B′</option>
+              <option value="compose">Composition T₂ ∘ T₁</option>
+              <option value="inverse">Inverse of T</option>
+            </select>
+          </label>
+          <label class="field" id="d4-n-field"><span class="field-label">n (domain ℝⁿ)</span><select id="d4-n"></select></label>
+          <label class="field" id="d4-m-field"><span class="field-label">m (codomain ℝᵐ)</span><select id="d4-m"></select></label>
+          <button type="button" id="d4-example" class="button secondary">Load example</button>
+          <button type="button" id="d4-clear" class="button secondary">Clear</button>
+        </div>
+
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block" id="d4-block-v">
+              <span class="entry-label" id="d4-label-v">v₁ … vₙ</span>
+              <div class="bracket"><div id="d4-grid-v" class="grid" role="group" aria-labelledby="d4-label-v"></div></div>
+            </div>
+            <div class="entry-block" id="d4-block-t">
+              <span class="entry-label" id="d4-label-t">T(v₁) … T(vₙ)</span>
+              <div class="bracket"><div id="d4-grid-t" class="grid" role="group" aria-labelledby="d4-label-t"></div></div>
+            </div>
+            <div class="entry-block" id="d4-block-a">
+              <span class="entry-label" id="d4-label-a">A</span>
+              <div class="bracket"><div id="d4-grid-a" class="grid" role="group" aria-labelledby="d4-label-a"></div></div>
+            </div>
+            <div class="entry-block" id="d4-block-b">
+              <span class="entry-label" id="d4-label-b">B</span>
+              <div class="bracket"><div id="d4-grid-b" class="grid" role="group" aria-labelledby="d4-label-b"></div></div>
+            </div>
+            <div class="entry-block" id="d4-block-b2">
+              <span class="entry-label" id="d4-label-b2">B′</span>
+              <div class="bracket"><div id="d4-grid-b2" class="grid" role="group" aria-labelledby="d4-label-b2"></div></div>
+            </div>
+            <div class="entry-block" id="d4-block-x">
+              <span class="entry-label" id="d4-label-x">x</span>
+              <div class="bracket"><div id="d4-grid-x" class="grid" role="group" aria-labelledby="d4-label-x"></div></div>
+            </div>
+            <div class="entry-block" id="d4-block-a1">
+              <span class="entry-label" id="d4-label-a1">A₁ (matrix of T₁)</span>
+              <div class="controls">
+                <label class="field"><span class="field-label">Rows</span><select id="d4-a1-rows"></select></label>
+                <label class="field"><span class="field-label">Columns</span><select id="d4-a1-cols"></select></label>
+              </div>
+              <div class="bracket"><div id="d4-grid-a1" class="grid" role="group" aria-labelledby="d4-label-a1"></div></div>
+            </div>
+            <div class="entry-block" id="d4-block-a2">
+              <span class="entry-label" id="d4-label-a2">A₂ (matrix of T₂)</span>
+              <div class="controls">
+                <label class="field"><span class="field-label">Rows</span><select id="d4-a2-rows"></select></label>
+                <label class="field"><span class="field-label">Columns</span><select id="d4-a2-cols"></select></label>
+              </div>
+              <div class="bracket"><div id="d4-grid-a2" class="grid" role="group" aria-labelledby="d4-label-a2"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">
+          Each column of a basis, or of the images, is one vector. Polynomials and matrices are entered as coordinate vectors:
+          enter p(x) = c₀ + c₁x + c₂x² as (c₀, c₁, c₂). Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>).
+        </p>
+        <div id="d4-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="d4-solve" class="button primary">Compute</button>
+          <span id="d4-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="d4-results" class="results" aria-labelledby="d4-results-heading" hidden>
+        <h2 id="d4-results-heading" tabindex="-1">Solution</h2>
+        <div id="d4-body"></div>
+      </section>
+    </section>
     </div>
     </div>
   </main>
@@ -372,20 +595,25 @@
     <p>Demo only. Created by Jana Mei Lascano for AMAT 105 extra credit.</p>
   </footer>
 
-  <script src="fraction.js?v=8"></script>
-  <script src="rowreduce.js?v=8"></script>
-  <script src="matrix.js?v=8"></script>
-  <script src="lu.js?v=8"></script>
-  <script src="systems.js?v=8"></script>
-  <script src="matops.js?v=8"></script>
-  <script src="determinants.js?v=8"></script>
-  <script src="spaces.js?v=8"></script>
-  <script src="render.js?v=8"></script>
-  <script src="tab-ab1.js?v=8"></script>
-  <script src="tab-b2.js?v=8"></script>
-  <script src="tab-b3.js?v=8"></script>
-  <script src="tab-c.js?v=8"></script>
-  <script src="tab-d3.js?v=8"></script>
-  <script src="app.js?v=8"></script>
+  <script src="fraction.js?v=9"></script>
+  <script src="rowreduce.js?v=9"></script>
+  <script src="matrix.js?v=9"></script>
+  <script src="spaces.js?v=9"></script>
+  <script src="lu.js?v=9"></script>
+  <script src="systems.js?v=9"></script>
+  <script src="matops.js?v=9"></script>
+  <script src="determinants.js?v=9"></script>
+  <script src="vectorspaces.js?v=9"></script>
+  <script src="lintrans.js?v=9"></script>
+  <script src="render.js?v=9"></script>
+  <script src="tab-ab1.js?v=9"></script>
+  <script src="tab-b2.js?v=9"></script>
+  <script src="tab-b3.js?v=9"></script>
+  <script src="tab-c.js?v=9"></script>
+  <script src="tab-d1.js?v=9"></script>
+  <script src="tab-d2.js?v=9"></script>
+  <script src="tab-d3.js?v=9"></script>
+  <script src="tab-d4.js?v=9"></script>
+  <script src="app.js?v=9"></script>
 </body>
 </html>

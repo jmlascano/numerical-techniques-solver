@@ -74,6 +74,16 @@
     return el("div", { class: "vector-list" }, items.map((it) => scroller(labeled(it.name, it.vector, it.opts))));
   }
 
+  /* "(1, −2, 3)" */
+  function tuple(v) {
+    return "(" + v.map(text).join(", ") + ")";
+  }
+
+  /* The columns of a matrix (array of rows) as a list of vectors. */
+  function columnsOf(M) {
+    return M[0].map((_, j) => M.map((row) => row[j]));
+  }
+
   /* ---------- Layout ---------- */
 
   function section(title, intro) {
@@ -262,6 +272,8 @@
     mathRow,
     term,
     vectors,
+    tuple,
+    columnsOf,
     section,
     scroller,
     para,

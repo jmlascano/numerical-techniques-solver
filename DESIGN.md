@@ -51,7 +51,10 @@ Each tab has exactly one primary button:
 | Matrices and Matrix Operations | Compute |
 | LU Decomposition | Solve |
 | Determinants | Find determinant |
+| Real Vector Spaces | Check |
+| Coordinates and Bases | Compute |
 | Row, Column and Null Spaces | Find bases |
+| Linear Transformations | Compute |
 
 All buttons and inputs are at least 48px tall.
 
@@ -62,7 +65,7 @@ None. The one exception: after Solve, the page scrolls to the solution (smoothly
 ## Layout
 
 - Topic list: one entry per slide set, in course order (Systems of Linear Equations → … → Eigenvalues and Eigenvectors → Diagonalization and Cayley–Hamilton), with no slide codes shown. Wider than 800px it is a 232px side column to the left of the content that stays in view while scrolling (sticky). At 800px and below it becomes a row above the content that scrolls sideways inside itself, with 168px entries so the next one peeks in; the active topic is centered in that row.
-- Routing: `#ab1`, `#b2`, `#b3`, `#c`, `#d3`. An unknown or planned hash falls back to the default, D3.
+- Routing: `#ab1`, `#b2`, `#b3`, `#c`, `#d1`, `#d2`, `#d3`, `#d4`. An unknown or planned hash falls back to the default, D3.
 - Pivot columns (D3) use the same accent bold as the changed row in each step.
 - Equations that hold several matrices, such as the parametric vector form, wrap on a phone, and a coefficient always stays with its vector ("+ t [v]").
 - Max width 1200px (side column + content). In each tab, the input comes first, then the solution.
@@ -70,6 +73,8 @@ None. The one exception: after Solve, the page scrolls to the solution (smoothly
   - Matrices and Matrix Operations: an operation select shows only the inputs that operation needs. Order: inputs → the rule → the result; AB adds a closed "Show how each entry is computed" disclosure; A⁻¹ shows [A | I] → Gauss–Jordan steps → [I | A⁻¹] → A⁻¹ → AA⁻¹ = I; the elementary-product decomposition shows the steps with Eᵢ notes → the inverses → A = E₁⁻¹⋯Eₚ⁻¹ multiplied out and checked. "Load example" loads the first test case for the chosen operation.
   - B3 order: row operations → L and U → forward substitution → back substitution → x → check.
   - Determinants order: depends on the method. Definition: the table of permutations → the sum. Cofactors: A with the chosen row or column in blue → each cofactor with its minor worked out (nested for 4 × 4) → the sum. Adjoint: cofactors → C → adj(A) → A·adj(A) = det(A)I → A⁻¹ and AA⁻¹ = I. Each ends with "The determinant".
+  - Real Vector Spaces, Coordinates and Bases, Linear Transformations: a "Question" or "Task" select shows only the inputs that task needs; vectors (bases, images) are entered as the columns of a grid. Order: the matrix to reduce → its row operations → R (pivot columns in blue when they matter) → the conclusion, in a failure block when the answer is "no" → the answer block → a check.
+  - Notation without subscript letters: [v](B) is the coordinate vector of v relative to B, P(B′→B) the transition matrix from B′ to B, and [T](B′, B) the matrix of T relative to B and B′. Each panel's intro defines it, and every matrix is labeled with both bases.
   - D3 order: Gauss–Jordan steps → R and the pivot columns → row space → column space → null space → rank, nullity and the Dimension Theorem → Av = 0.
 - At 480px and below, Solve goes full width, cell width stays 48px, and the `b` column moves below `A` when it does not fit beside it.
 - Undefined operations (sizes that do not match, a singular matrix) are shown as a "Not defined" or "A is singular" block with the existing failure style (2px black top border, bold text), never as a crash.

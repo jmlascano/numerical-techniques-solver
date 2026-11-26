@@ -16,10 +16,10 @@ One tab per slide set, in course order. Each built topic has its own link.
 | B2 | Matrices and Matrix Operations | Built | `#b2` |
 | B3 | LU Decomposition | Built | `#b3` |
 | C | Determinants | Built | `#c` |
-| D1 | Real Vector Spaces | Planned | |
-| D2 | Coordinates and Bases | Planned | |
+| D1 | Real Vector Spaces | Built | `#d1` |
+| D2 | Coordinates and Bases | Built | `#d2` |
 | D3 | Row, Column and Null Spaces | Built (default) | `#d3` |
-| D4 | Linear Transformations | Planned | |
+| D4 | Linear Transformations | Built | `#d4` |
 | E | Eigenvalues and Eigenvectors | Planned | |
 | E2 | Diagonalization and Cayley–Hamilton | Planned | |
 
@@ -31,12 +31,18 @@ One tab per slide set, in course order. Each built topic has its own link.
 
 **C, Determinants.** Three methods: by definition (every permutation with its inversions, sign and elementary product; up to 4 × 4), cofactor expansion along any row or column (written out down to 2 × 2 up to 4 × 4; for 5 × 5 and 6 × 6 the minors' determinants are given as numbers), and the adjoint (cofactor matrix, adj(*A*), *A*·adj(*A*) = det(*A*)*I*, and *A*⁻¹ = (1/det *A*)·adj(*A*) when det *A* ≠ 0).
 
+**D1, Real Vector Spaces.** In ℝⁿ, with the vectors entered as columns: is *w* a linear combination of *v*₁, …, *v*ₖ (the coefficients, or the 0 = 1 row that rules it out); do they span ℝⁿ (by rank, with a standard vector outside the span when they do not); are they linearly independent (a whole-number relation when they are not, solved for the last vector it involves, and Thm 4.13 when *k* > *n*). Function spaces (the Wronskian) are not covered.
+
+**D2, Coordinates and Bases.** Is *S* a basis for ℝⁿ (Thm 4.22); coordinates [*x*](B) of a vector and the vector from its coordinates; reduce a spanning set or extend an independent set to a basis by row reducing [*S* | *e*₁ … *e*ₙ] (Thm 4.23); change of basis with Anton's convention, where P(B′→B) has the columns [*u*′ⱼ](B), [*v*](B) = P(B′→B)[*v*](B′), both transition matrices come from row reducing [B | B′] and [B′ | B], and converted coordinates are checked by converting back.
+
 **D3, Row, Column and Null Spaces.** For any *m*×*n* matrix (1 to 6 each), it shows the Gauss–Jordan steps to the RREF *R*, then:
 - a basis for the row space (the nonzero rows of *R*);
 - a basis for the column space (the pivot columns of the original *A*);
 - a basis for the null space (free variables, then the general solution in parametric vector form);
 - rank, nullity, and rank + nullity = *n*;
 - *Av* = 0 for each null space basis vector.
+
+**D4, Linear Transformations.** T: ℝⁿ → ℝᵐ entered by its standard matrix (polynomials and matrices as coordinate vectors): T from the images of a basis (Thm 4.36) with its standard matrix; kernel and range with rank(T) + nullity(T) = *n* (Thm 4.40) and whether T is one-to-one, onto or an isomorphism; [T](B′, B) from [B′ | T(*u*₁) … T(*u*ₙ)] and the 3-step indirect computation of T(*x*) for an *x* you enter; T₂ ∘ T₁ as A₂A₁; T⁻¹ as A⁻¹ when T is bijective.
 
 All arithmetic is exact. `fraction.js` uses BigInt numerators and denominators and always reduces, so there are no floating-point values anywhere.
 
@@ -54,10 +60,12 @@ All arithmetic is exact. `fraction.js` uses BigInt numerators and denominators a
 | `systems.js` | Gaussian elimination, consistency, back-substitution (AB1) |
 | `matops.js` | Matrix arithmetic, inverse by Gauss–Jordan, elementary matrices (B2) |
 | `lu.js` | LU decomposition and substitution (B3) |
+| `vectorspaces.js` | Linear combinations, span, independence (D1); bases, coordinates, reduce/extend, change of basis (D2) |
+| `lintrans.js` | Linear transformations: basis images, kernel and range, matrices relative to bases, composition, inverse (D4) |
 | `determinants.js` | Determinants by definition, cofactor expansion and the adjoint (C) |
 | `spaces.js` | Row, column and null space, rank and nullity (D3) |
 | `render.js` | Shared rendering: matrices, step lists, disclosures, tables, the input grid |
-| `tab-ab1.js`, `tab-b2.js`, `tab-b3.js`, `tab-c.js`, `tab-d3.js` | Input handling and output for each tab |
+| `tab-ab1.js`, `tab-b2.js`, `tab-b3.js`, `tab-c.js`, `tab-d1.js`, `tab-d2.js`, `tab-d3.js`, `tab-d4.js` | Input handling and output for each tab |
 | `app.js` | Tabs and hash routing |
 | `tests.html` | Open it in a browser to run every test case and see pass/fail |
 
@@ -79,6 +87,9 @@ The tests are for development only. The live site does not link to them, and `te
 - **AB1**: Problem A (unique, *x* = (1, −1, 2)), Problem Set 1 A (4 × 4, (*w*, *x*, *y*, *z*) = (1, 2, 3, 4)), an inconsistent system (row [0 0 | 1]), and infinitely many solutions (*x* = 5 + *y* − 2*z*).
 - **B2**: the Anton §1.3 sums, scalar multiples, products, trace and transpose; 2*B* − *C* undefined; the inverses of the Problem A and PS1 matrices; E₁(2,2), E₂(1,3), E₃(−2,1,2); the Problem A matrix as a product of elementary matrices.
 - **C**: det = 52 (Problem A) and 17 (PS1 4 × 4) by all three methods, adj of the Problem A matrix, a singular matrix (det 0, no inverse), and the size limits.
+- **D1**: *w* = (9, 2, 7) = −3*u* + 2*v*; *z* = (4, −1, 8) is not a combination; (1,1,2), (1,0,1), (2,1,3) do not span ℝ³; *v*₁ + *v*₂ − 2*v*₃ = 0 for {(1,−2,3), (5,6,−1), (3,2,1)}.
+- **D2**: (5, −1, 9) → (1, −1, 2) and (−1, 3, 2) → (11, 31, 7); extending {(−1,2,3), (1,−2,−2)} with *e*₁; both change-of-basis examples (ℝ² and ℝ³), including conversion and back.
+- **D4**: T(2, −3, 5) = (9, 23) and its standard matrix; Anton Example 2's [T](B′, B); T(*p*) = *x*·*p*(*x*) from P₂ to P₃; kernel and range of the D3 Test 1 matrix; composition and inverse.
 - **B3**, from AMAT 105 Review & Exercises Problem A: *L*, *U*, the row operations, and both right-hand sides (*b* = [9, 0, −1] → *x* = [1, −1, 2]; *b* = [4, 3, 0] → *x* = [43/52, −53/52, 23/52]), plus zero pivots, a singular matrix, and a non-square matrix.
 - **D3 Test 1**, the 4×5 example: RREF, pivot columns 1, 2, 3, all three bases, rank 3, nullity 2.
 - **D3 Test 2**, the B3 matrix: RREF = *I*₃, rank 3, null space {0}.

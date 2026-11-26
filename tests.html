@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
   <title>Tests — AMAT 105 Linear Algebra Solver</title>
-  <link rel="stylesheet" href="style.css?v=8">
+  <link rel="stylesheet" href="style.css?v=9">
   <style>
     .t-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
     .t-table th, .t-table td { text-align: left; vertical-align: top; padding: var(--s1); border-bottom: 1px solid var(--line-soft); }
@@ -31,16 +31,18 @@
     <p class="hint"><a href="index.html">Back to the solver</a></p>
   </main>
 
-  <script src="fraction.js?v=8"></script>
-  <script src="surd.js?v=8"></script>
-  <script src="rowreduce.js?v=8"></script>
-  <script src="matrix.js?v=8"></script>
-  <script src="poly.js?v=8"></script>
-  <script src="lu.js?v=8"></script>
-  <script src="spaces.js?v=8"></script>
-  <script src="systems.js?v=8"></script>
-  <script src="matops.js?v=8"></script>
-  <script src="determinants.js?v=8"></script>
+  <script src="fraction.js?v=9"></script>
+  <script src="surd.js?v=9"></script>
+  <script src="rowreduce.js?v=9"></script>
+  <script src="matrix.js?v=9"></script>
+  <script src="poly.js?v=9"></script>
+  <script src="lu.js?v=9"></script>
+  <script src="spaces.js?v=9"></script>
+  <script src="systems.js?v=9"></script>
+  <script src="matops.js?v=9"></script>
+  <script src="determinants.js?v=9"></script>
+  <script src="vectorspaces.js?v=9"></script>
+  <script src="lintrans.js?v=9"></script>
   <script>
     (function () {
       "use strict";
@@ -401,6 +403,91 @@
         const c = Determinants.byCofactors(I5);
         eq("cofactors on 5 × 5: top level only", [D(c.value), c.written, c.tree.terms[0].expansion], ["1", false, null]);
         eq("inversions of (3, 1, 2) = 2 (even)", Determinants.inversions([2, 0, 1]), 2);
+      });
+
+
+      /* ================= Real Vector Spaces (D1) ================= */
+      const Dv = (v) => "(" + v.map(D).join(", ") + ")";
+      test("D1 linear combination (D1 slides)", () => {
+        const r = VectorSpaces.linearCombination([[1, 2, -1], [6, 4, 2]], [9, 2, 7]);
+        eq("w = (9, 2, 7) = −3u + 2v", [r.ok].concat(r.coefficients.map(D)), [true, "−3", "2"]);
+        eq("  check", r.check, true);
+        const z = VectorSpaces.linearCombination([[1, 2, -1], [6, 4, 2]], [4, -1, 8]);
+        eq("z = (4, −1, 8) is not a linear combination (row 0 = 1)", [z.ok, z.reduction.rref[z.badRow].map(D)], [false, ["0", "0", "1"]]);
+      });
+      test("D1 span", () => {
+        const r = VectorSpaces.span([[1, 1, 2], [1, 0, 1], [2, 1, 3]]);
+        eq("(1,1,2), (1,0,1), (2,1,3) do not span ℝ³ (rank 2)", [r.spans, r.rank], [false, 2]);
+        eq("  a vector not in the span", Dv(r.witness.vector), "(1, 0, 0)");
+        eq("standard basis spans ℝ³", VectorSpaces.span([[1, 0, 0], [0, 1, 0], [0, 0, 1]]).spans, true);
+      });
+      test("D1 linear independence", () => {
+        const r = VectorSpaces.independence([[1, -2, 3], [5, 6, -1], [3, 2, 1]]);
+        eq("{(1,−2,3), (5,6,−1), (3,2,1)} is dependent", r.independent, false);
+        eq("  relation v₁ + v₂ − 2v₃ = 0", r.relation.map(D), ["1", "1", "−2"]);
+        eq("  relation checks to 0", Dv(r.relationCheck), "(0, 0, 0)");
+        eq("  solved for the last vector: v₃ = (1/2)v₁ + (1/2)v₂", [r.solvedFor + 1].concat(r.expression.map((e) => D(e.c) + "·v" + (e.j + 1))), [3, "1/2·v1", "1/2·v2"]);
+        eq("Thm 4.13: 3 vectors in ℝ² are dependent", [VectorSpaces.independence([[1, 0], [0, 1], [1, 1]]).moreThanN, VectorSpaces.independence([[1, 0], [0, 1], [1, 1]]).independent], [true, false]);
+        eq("e₁, e₂ are independent", VectorSpaces.independence([[1, 0], [0, 1]]).independent, true);
+      });
+
+      /* ================= Coordinates and Bases (D2) ================= */
+      test("D2 coordinates", () => {
+        const B = [[1, 2, 1], [2, 9, 0], [3, 3, 4]];
+        eq("B is a basis for ℝ³", VectorSpaces.isBasis(B).basis, true);
+        const r = VectorSpaces.coordinates(B, [5, -1, 9]);
+        eq("(5, −1, 9) relative to B", [r.ok, Dv(r.coordinates)], [true, "(1, −1, 2)"]);
+        eq("the vector with coordinates (−1, 3, 2)", Dv(VectorSpaces.fromCoordinates(B, [-1, 3, 2]).vector), "(11, 31, 7)");
+        eq("wrong size is not a basis", VectorSpaces.isBasis([[1, 0, 0], [0, 1, 0]]).basis, false);
+      });
+      test("D2 reduce or extend to a basis (Thm 4.23)", () => {
+        const r = VectorSpaces.reduceOrExtend([[-1, 2, 3], [1, -2, -2]]);
+        eq("extend {(−1,2,3), (1,−2,−2)}: keep both, add e₁", [r.kept, r.added.map((i) => "e" + (i + 1))], [[0, 1], ["e1"]]);
+        const s = VectorSpaces.reduceOrExtend([[1, 0], [2, 0], [0, 1], [1, 1]]);
+        eq("reduce a dependent spanning set of ℝ²", [s.kept, s.added], [[0, 2], []]);
+      });
+      test("D2 change of basis (Anton's convention)", () => {
+        const c = VectorSpaces.changeOfBasis([[1, 0], [0, 1]], [[1, 1], [2, 1]]);
+        eq("P(B′→B)", Dm(c.toB.P), [["1", "2"], ["1", "1"]]);
+        eq("P(B→B′)", Dm(c.toB2.P), [["−1", "2"], ["1", "−1"]]);
+        const cv = VectorSpaces.convert(c, [3, -2], "B");
+        eq("(3, −2) in B is (−7, 5) in B′, and back again", [Dv(cv.result), Dv(cv.back), cv.roundTrip], ["(−7, 5)", "(3, −2)", true]);
+        const c3 = VectorSpaces.changeOfBasis([[1, 0, 0], [2, 2, 0], [3, 3, 3]], [[1, 2, 3], [-4, 5, 6], [7, -8, 9]]);
+        eq("ℝ³ exercise: P(B′→B)", Dm(c3.toB.P), [["−1", "−9", "15"], ["−1/2", "−1/2", "−17/2"], ["1", "2", "3"]]);
+        eq("ℝ³ exercise: P(B→B′) = its inverse", Dm(c3.toB2.P), [["31/80", "57/40", "21/10"], ["−7/40", "−9/20", "−2/5"], ["−1/80", "−7/40", "−1/10"]]);
+        eq("  product is I", Matrix.equals(c3.product, Matrix.identity(3)), true);
+      });
+
+      /* ================= Linear Transformations (D4) ================= */
+      test("D4 T from the images of a basis (Thm 4.36)", () => {
+        const r = LinTrans.fromBasisImages([[1, 1, 1], [1, 1, 0], [1, 0, 0]], [[1, 0], [2, -1], [4, 3]], [2, -3, 5]);
+        eq("T(2, −3, 5)", Dv(r.Tx), "(9, 23)");
+        eq("standard matrix", Dm(r.A), [["4", "−2", "−1"], ["3", "−4", "1"]]);
+        eq("checks", r.checks.ok, true);
+      });
+      test("D4 matrix relative to bases (Anton Example 2)", () => {
+        const r = LinTrans.relativeMatrix([[0, 1], [-5, 13], [-7, 16]], [[3, 1], [5, 2]], [[1, 0, -1], [-1, 2, 2], [0, 1, 2]], [1, 1]);
+        eq("[T](B′, B)", Dm(r.M), [["1", "3"], ["0", "1"], ["−2", "−1"]]);
+        eq("T(x) found indirectly equals Ax", r.check, true);
+      });
+      test("D4 T: P₂ → P₃, T(p) = x·p(x), standard bases", () => {
+        const r = LinTrans.fromBasisImages([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]], [1, 2, 3]);
+        eq("[T]", Dm(r.A), [["0", "0", "0"], ["1", "0", "0"], ["0", "1", "0"], ["0", "0", "1"]]);
+        eq("T(1 + 2x + 3x²) = x + 2x² + 3x³", Dv(r.Tx), "(0, 1, 2, 3)");
+      });
+      test("D4 kernel and range (D3 Test 1 matrix)", () => {
+        const r = LinTrans.kernelRange([[1, -2, 0, 0, 3], [2, -5, -3, -2, 6], [0, 5, 15, 10, 0], [2, 6, 18, 8, 6]]);
+        eq("Ker(T) basis", r.analysis.nullSpace.basis.map((b) => Dv(b.vector)), ["(2, 1, −1, 1, 0)", "(−3, 0, 0, 0, 1)"]);
+        eq("R(T) basis", r.analysis.colBasis.map((c) => Dv(c.vector)), ["(1, 2, 0, 2)", "(−2, −5, 5, 6)", "(0, −3, 15, 18)"]);
+        eq("rank 3, nullity 2, not one-to-one, not onto", [r.analysis.rank, r.analysis.nullity, r.oneToOne, r.onto], [3, 2, false, false]);
+      });
+      test("D4 composition and inverse", () => {
+        const c = LinTrans.composition([[0, 0, 0], [1, 0, 0], [0, 1, 0], [0, 0, 1]], [[0, 1, 0, 0], [0, 0, 2, 0], [0, 0, 0, 3]]);
+        eq("(d/dx) ∘ (multiply by x) on P₂", Dm(c.matrix), [["1", "0", "0"], ["0", "2", "0"], ["0", "0", "3"]]);
+        eq("mismatched sizes are undefined", LinTrans.composition([[1, 2]], [[1, 2]]).ok, false);
+        eq("T⁻¹ has matrix A⁻¹", Dm(Matrix.scale(52, LinTrans.inverse(A).inv.inverse)), [["7", "5", "11"], ["−5", "−11", "7"], ["11", "−7", "−5"]]);
+        eq("non-square T has no inverse", LinTrans.inverse([[1, 2, 3]]).ok, false);
+        eq("singular T has no inverse", LinTrans.inverse([[1, 2], [2, 4]]).ok, false);
       });
 
       const s = document.getElementById("summary");
