@@ -379,3 +379,38 @@ a.tab[aria-current="page"]:hover { background: var(--tint); }
   .facts { grid-template-columns: 1fr; gap: 0; }
   .facts dd { margin-bottom: var(--s1); }
 }
+
+/* ---------- Additions for the remaining topics (documented in DESIGN.md) ---------- */
+
+/* Bar of an augmented matrix [A | b] or [A | I] */
+.m-cell.is-aug { border-left: 2px solid var(--ink); padding-left: var(--s2); }
+
+/* Closed-by-default disclosure ("Show how each entry is computed") */
+.disclosure { margin-top: var(--s2); }
+.disclosure > summary {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  width: max-content;
+  max-width: 100%;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+  text-underline-offset: 3px;
+}
+.disclosure > summary:hover { text-decoration: underline; }
+.disclosure[open] > summary { margin-bottom: var(--s1); }
+
+/* Data table (permutation terms of a determinant) */
+.data-table { border-collapse: collapse; font-variant-numeric: tabular-nums; width: max-content; }
+.data-table th,
+.data-table td { padding: var(--s1) var(--s2); border-bottom: 1px solid var(--line-soft); text-align: left; white-space: nowrap; }
+.data-table th { font-weight: 700; font-size: var(--text-sm); }
+.data-table .num { text-align: right; }
+
+/* A field whose select has long option text: may shrink to the available width on phones */
+.field-wide { min-width: 0; max-width: 100%; }
+.field-wide select { max-width: 100%; }
+
+/* The hidden attribute always wins over display rules such as .field { display: flex } */
+[hidden] { display: none !important; }

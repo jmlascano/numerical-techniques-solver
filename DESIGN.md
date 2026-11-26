@@ -43,7 +43,15 @@ There is no red. Errors are shown with a thick black border and fill on the bad 
 | Topic, built (a link) | Light tint + black edge bar | Same outline | n/a | Active: accent text + 3px accent bar on the left edge (bottom edge in the phone row), `aria-current="page"`, never a filled pill |
 | Topic, planned | n/a | Not focusable | Always: muted text, "Planned" label, `not-allowed` cursor, `aria-disabled` | Not a link |
 
-Each tab has exactly one primary button: "Solve" (B3) or "Find bases" (D3).
+Each tab has exactly one primary button:
+
+| Topic | Primary button |
+|---|---|
+| Systems of Linear Equations | Solve |
+| Matrices and Matrix Operations | Compute |
+| LU Decomposition | Solve |
+| Determinants | Find determinant |
+| Row, Column and Null Spaces | Find bases |
 
 All buttons and inputs are at least 48px tall.
 
@@ -54,11 +62,27 @@ None. The one exception: after Solve, the page scrolls to the solution (smoothly
 ## Layout
 
 - Topic list: one entry per slide set, in course order (Systems of Linear Equations → … → Eigenvalues and Eigenvectors → Diagonalization and Cayley–Hamilton), with no slide codes shown. Wider than 800px it is a 232px side column to the left of the content that stays in view while scrolling (sticky). At 800px and below it becomes a row above the content that scrolls sideways inside itself, with 168px entries so the next one peeks in; the active topic is centered in that row.
-- Routing: `#b3`, `#d3`. An unknown or planned hash falls back to the default, D3.
+- Routing: `#ab1`, `#b2`, `#b3`, `#c`, `#d3`. An unknown or planned hash falls back to the default, D3.
 - Pivot columns (D3) use the same accent bold as the changed row in each step.
 - Equations that hold several matrices, such as the parametric vector form, wrap on a phone, and a coefficient always stays with its vector ("+ t [v]").
 - Max width 1200px (side column + content). In each tab, the input comes first, then the solution.
+  - Systems of Linear Equations order: [A | b] → Gaussian elimination steps → row echelon form → consistency (the 0 = 1 row in blue, or the leading and free variables) → back-substitution → the solution or solution set → check.
+  - Matrices and Matrix Operations: an operation select shows only the inputs that operation needs. Order: inputs → the rule → the result; AB adds a closed "Show how each entry is computed" disclosure; A⁻¹ shows [A | I] → Gauss–Jordan steps → [I | A⁻¹] → A⁻¹ → AA⁻¹ = I; the elementary-product decomposition shows the steps with Eᵢ notes → the inverses → A = E₁⁻¹⋯Eₚ⁻¹ multiplied out and checked. "Load example" loads the first test case for the chosen operation.
   - B3 order: row operations → L and U → forward substitution → back substitution → x → check.
+  - Determinants order: depends on the method. Definition: the table of permutations → the sum. Cofactors: A with the chosen row or column in blue → each cofactor with its minor worked out (nested for 4 × 4) → the sum. Adjoint: cofactors → C → adj(A) → A·adj(A) = det(A)I → A⁻¹ and AA⁻¹ = I. Each ends with "The determinant".
   - D3 order: Gauss–Jordan steps → R and the pivot columns → row space → column space → null space → rank, nullity and the Dimension Theorem → Av = 0.
 - At 480px and below, Solve goes full width, cell width stays 48px, and the `b` column moves below `A` when it does not fit beside it.
+- Undefined operations (sizes that do not match, a singular matrix) are shown as a "Not defined" or "A is singular" block with the existing failure style (2px black top border, bold text), never as a crash.
 - Wide matrices scroll inside their own box. The page itself never scrolls sideways (checked at 375px with a 5×5 B3 matrix and a 6×6 D3 matrix).
+
+## Added CSS (for the remaining topics)
+
+These classes were added; nothing that existed before was changed.
+
+| Class | Use |
+|---|---|
+| `.m-cell.is-aug` | The vertical bar of an augmented matrix [A \| b] or [A \| I]: 2px `--ink` left border, 16px gap. Set with `Render.matrix(M, { augment: n })`. |
+| `.disclosure` | A native `<details>` closed by default. The summary is accent-colored, semibold, at least 48px tall, underlined on hover, with the standard focus ring. |
+| `.data-table` | A plain table (the permutation terms of a determinant): 1px `--line-soft` row rules, tabular numerals, numbers right-aligned (`.num`). It scrolls inside its own box. |
+| `.field-wide` | A field whose select has long option text (the operation and elementary-matrix type selects). It may shrink to the available width on phones; the native picker still shows the full text. |
+| `[hidden]` | `display: none !important`, so the `hidden` attribute always wins over rules such as `.field { display: flex }`. |

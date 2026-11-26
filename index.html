@@ -6,7 +6,7 @@
   <title>Row, Column and Null Spaces — AMAT 105 Solver</title>
   <meta name="description" content="Step-by-step AMAT 105 linear algebra solutions with exact fractions, one tab per slide set.">
   <!-- Bump ?v= on every release so browsers fetch fresh files (GitHub Pages caches for 10 minutes). -->
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
   <main class="page">
@@ -18,10 +18,10 @@
     <div class="layout">
     <nav class="tabs" aria-label="Topics">
       <ul class="tab-list">
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Systems of Linear Equations</span><span class="tab-status">Planned</span></span></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Matrices and Matrix Operations</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#ab1" data-topic="ab1"><span class="tab-name">Systems of Linear Equations</span></a></li>
+        <li><a class="tab" href="#b2" data-topic="b2"><span class="tab-name">Matrices and Matrix Operations</span></a></li>
         <li><a class="tab" href="#b3" data-topic="b3"><span class="tab-name">LU Decomposition</span></a></li>
-        <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Determinants</span><span class="tab-status">Planned</span></span></li>
+        <li><a class="tab" href="#c" data-topic="c"><span class="tab-name">Determinants</span></a></li>
         <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Real Vector Spaces</span><span class="tab-status">Planned</span></span></li>
         <li><span class="tab is-planned" aria-disabled="true"><span class="tab-name">Coordinates and Bases</span><span class="tab-status">Planned</span></span></li>
         <li><a class="tab" href="#d3" data-topic="d3"><span class="tab-name">Row, Column and Null Spaces</span></a></li>
@@ -32,6 +32,171 @@
     </nav>
 
     <div class="layout-main">
+
+    <!-- ============== AB1: Systems of Linear Equations ============== -->
+    <section id="panel-ab1" class="panel" data-title="Systems of Linear Equations" aria-labelledby="ab1-title" hidden>
+      <header class="panel-head">
+        <h2 id="ab1-title">Systems of Linear Equations</h2>
+        <p class="lede">
+          Enter a system as its augmented matrix [<var>A</var> | <var>b</var>]. The solver uses Gaussian elimination to reach
+          row echelon form, says whether the system is consistent, and finishes with back-substitution.
+        </p>
+      </header>
+
+      <form id="ab1-form" class="input-panel" novalidate aria-label="System of linear equations input">
+        <div class="controls">
+          <label class="field">
+            <span class="field-label">Equations (m)</span>
+            <select id="ab1-rows"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Unknowns (n)</span>
+            <select id="ab1-cols"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Variable names</span>
+            <select id="ab1-names">
+              <option value="subscript">x₁, x₂, …</option>
+              <option value="letters">x, y, z</option>
+            </select>
+          </label>
+          <button type="button" id="ab1-example" class="button secondary">Load example</button>
+          <button type="button" id="ab1-clear" class="button secondary">Clear</button>
+        </div>
+
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block">
+              <span class="entry-label" id="ab1-label-a">A</span>
+              <div class="bracket"><div id="ab1-grid-a" class="grid" role="group" aria-labelledby="ab1-label-a"></div></div>
+            </div>
+            <div class="entry-block">
+              <span class="entry-label" id="ab1-label-b">b</span>
+              <div class="bracket"><div id="ab1-grid-b" class="grid" role="group" aria-labelledby="ab1-label-b"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">
+          Each row is one equation: its coefficients go in <var>A</var> and its right-hand side in <var>b</var>.
+          Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>). With x, y, z selected, 4 unknowns are named w, x, y, z, and 5 or 6 unknowns use x₁ … xₙ.
+        </p>
+        <div id="ab1-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="ab1-solve" class="button primary">Solve</button>
+          <span id="ab1-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="ab1-results" class="results" aria-labelledby="ab1-results-heading" hidden>
+        <h2 id="ab1-results-heading" tabindex="-1">Solution</h2>
+        <div id="ab1-body"></div>
+      </section>
+    </section>
+
+    <!-- ============== B2: Matrices and Matrix Operations ============== -->
+    <section id="panel-b2" class="panel" data-title="Matrices and Matrix Operations" aria-labelledby="b2-title" hidden>
+      <header class="panel-head">
+        <h2 id="b2-title">Matrices and Matrix Operations</h2>
+        <p class="lede">
+          Choose an operation, enter the matrices it needs, and compute. Inverses are found by Gauss–Jordan elimination on
+          [<var>A</var> | <var>I</var>], and an invertible <var>A</var> can be written as a product of elementary matrices.
+        </p>
+      </header>
+
+      <form id="b2-form" class="input-panel" novalidate aria-label="Matrix operation input">
+        <div class="controls">
+          <label class="field field-wide">
+            <span class="field-label">Operation</span>
+            <select id="b2-op">
+              <option value="add">A + B</option>
+              <option value="sub">A − B</option>
+              <option value="scale">kA</option>
+              <option value="combo">kA + mB</option>
+              <option value="mul">AB</option>
+              <option value="transpose">Aᵀ (transpose)</option>
+              <option value="trace">tr(A) (trace)</option>
+              <option value="inverse">A⁻¹ by Gauss–Jordan</option>
+              <option value="elementary">Elementary matrix</option>
+              <option value="decompose">A as a product of elementary matrices</option>
+            </select>
+          </label>
+          <button type="button" id="b2-example" class="button secondary">Load example</button>
+          <button type="button" id="b2-clear" class="button secondary">Clear</button>
+        </div>
+
+        <div class="controls" id="b2-scalars">
+          <label class="field" id="b2-k-field">
+            <span class="field-label">k</span>
+            <input type="text" id="b2-k" class="cell" autocomplete="off" spellcheck="false" aria-label="Scalar k">
+          </label>
+          <label class="field" id="b2-m-field">
+            <span class="field-label">m</span>
+            <input type="text" id="b2-m" class="cell" autocomplete="off" spellcheck="false" aria-label="Scalar m">
+          </label>
+        </div>
+
+        <div class="controls" id="b2-elem" hidden>
+          <label class="field field-wide">
+            <span class="field-label">Type</span>
+            <select id="b2-etype">
+              <option value="1">E₁(c, k): multiply row k by c</option>
+              <option value="2">E₂(k, j): interchange rows k and j</option>
+              <option value="3">E₃(c, k, j): add c times row k to row j</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label">Size n</span>
+            <select id="b2-en"></select>
+          </label>
+          <label class="field" id="b2-ec-field">
+            <span class="field-label">c</span>
+            <input type="text" id="b2-ec" class="cell" autocomplete="off" spellcheck="false" aria-label="Constant c">
+          </label>
+          <label class="field">
+            <span class="field-label">k</span>
+            <select id="b2-ek"></select>
+          </label>
+          <label class="field" id="b2-ej-field">
+            <span class="field-label">j</span>
+            <select id="b2-ej"></select>
+          </label>
+        </div>
+
+        <div class="entry-wrap" id="b2-matrices">
+          <div class="entry">
+            <div class="entry-block" id="b2-block-a">
+              <span class="entry-label" id="b2-label-a">A</span>
+              <div class="controls">
+                <label class="field"><span class="field-label">Rows</span><select id="b2-a-rows"></select></label>
+                <label class="field"><span class="field-label">Columns</span><select id="b2-a-cols"></select></label>
+              </div>
+              <div class="bracket"><div id="b2-grid-a" class="grid" role="group" aria-labelledby="b2-label-a"></div></div>
+            </div>
+            <div class="entry-block" id="b2-block-b">
+              <span class="entry-label" id="b2-label-b">B</span>
+              <div class="controls">
+                <label class="field"><span class="field-label">Rows</span><select id="b2-b-rows"></select></label>
+                <label class="field"><span class="field-label">Columns</span><select id="b2-b-cols"></select></label>
+              </div>
+              <div class="bracket"><div id="b2-grid-b" class="grid" role="group" aria-labelledby="b2-label-b"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint" id="b2-hint-text">Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>). Load example fills in the example for the chosen operation.</p>
+        <div id="b2-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="b2-solve" class="button primary">Compute</button>
+          <span id="b2-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="b2-results" class="results" aria-labelledby="b2-results-heading" hidden>
+        <h2 id="b2-results-heading" tabindex="-1">Result</h2>
+        <div id="b2-body"></div>
+      </section>
+    </section>
 
     <!-- ===================== B3: LU Decomposition ===================== -->
     <section id="panel-b3" class="panel" data-title="LU Decomposition" aria-labelledby="b3-title" hidden>
@@ -87,6 +252,61 @@
         <div id="b3-body"></div>
       </section>
 
+    </section>
+
+    <!-- ===================== C: Determinants ===================== -->
+    <section id="panel-c" class="panel" data-title="Determinants" aria-labelledby="c-title" hidden>
+      <header class="panel-head">
+        <h2 id="c-title">Determinants</h2>
+        <p class="lede">
+          Enter a square matrix <var>A</var> and choose a method: the definition (a sum over permutations),
+          cofactor expansion along a row or column, or the adjoint.
+        </p>
+      </header>
+
+      <form id="c-form" class="input-panel" novalidate aria-label="Determinant input">
+        <div class="controls">
+          <label class="field">
+            <span class="field-label">Size of A</span>
+            <select id="c-size"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Method</span>
+            <select id="c-method">
+              <option value="definition">By definition (permutations)</option>
+              <option value="cofactor" selected>Cofactor expansion</option>
+              <option value="adjoint">Adjoint</option>
+            </select>
+          </label>
+          <label class="field" id="c-along-field">
+            <span class="field-label">Expand along</span>
+            <select id="c-along"></select>
+          </label>
+          <button type="button" id="c-example" class="button secondary">Load example</button>
+          <button type="button" id="c-clear" class="button secondary">Clear</button>
+        </div>
+
+        <div class="entry-wrap">
+          <div class="entry">
+            <div class="entry-block">
+              <span class="entry-label" id="c-label-a">A</span>
+              <div class="bracket"><div id="c-grid-a" class="grid" role="group" aria-labelledby="c-label-a"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">Entries may be integers (<code>3</code>), decimals (<code>-0.25</code>), or fractions (<code>-3/4</code>). The definition method lists every permutation, so it is limited to 4 × 4.</p>
+        <div id="c-message" class="message" role="alert"></div>
+        <div class="actions">
+          <button type="submit" id="c-solve" class="button primary">Find determinant</button>
+          <span id="c-hint" class="hint-inline"></span>
+        </div>
+      </form>
+
+      <section id="c-results" class="results" aria-labelledby="c-results-heading" hidden>
+        <h2 id="c-results-heading" tabindex="-1">Solution</h2>
+        <div id="c-body"></div>
+      </section>
     </section>
 
     <!-- ============== D3: Row, Column and Null Spaces ============== -->
@@ -152,14 +372,20 @@
     <p>Demo only. Created by Jana Mei Lascano for AMAT 105 extra credit.</p>
   </footer>
 
-  <script src="fraction.js?v=7"></script>
-  <script src="rowreduce.js?v=7"></script>
-  <script src="matrix.js?v=7"></script>
-  <script src="lu.js?v=7"></script>
-  <script src="spaces.js?v=7"></script>
-  <script src="render.js?v=7"></script>
-  <script src="tab-b3.js?v=7"></script>
-  <script src="tab-d3.js?v=7"></script>
-  <script src="app.js?v=7"></script>
+  <script src="fraction.js?v=8"></script>
+  <script src="rowreduce.js?v=8"></script>
+  <script src="matrix.js?v=8"></script>
+  <script src="lu.js?v=8"></script>
+  <script src="systems.js?v=8"></script>
+  <script src="matops.js?v=8"></script>
+  <script src="determinants.js?v=8"></script>
+  <script src="spaces.js?v=8"></script>
+  <script src="render.js?v=8"></script>
+  <script src="tab-ab1.js?v=8"></script>
+  <script src="tab-b2.js?v=8"></script>
+  <script src="tab-b3.js?v=8"></script>
+  <script src="tab-c.js?v=8"></script>
+  <script src="tab-d3.js?v=8"></script>
+  <script src="app.js?v=8"></script>
 </body>
 </html>

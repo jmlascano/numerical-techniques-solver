@@ -35,9 +35,16 @@
 
   const SUB = ["₀", "₁", "₂", "₃", "₄", "₅", "₆", "₇", "₈", "₉"];
 
+  const SUP = ["⁰", "¹", "²", "³", "⁴", "⁵", "⁶", "⁷", "⁸", "⁹"];
+
   /* Subscript digits: sub(12) -> "₁₂" */
   function sub(n) {
     return String(n).split("").map((d) => SUB[Number(d)]).join("");
+  }
+
+  /* Superscript: sup("1+2") -> "¹⁺²", sup(3) -> "³" */
+  function sup(n) {
+    return String(n).split("").map((d) => (d === "+" ? "⁺" : d === "-" ? "⁻" : SUP[Number(d)])).join("");
   }
 
   /* A coefficient written in front of a symbol: "" for 1, "3", "(1/2)", "(−2/5)", "(2 + √3)". */
@@ -109,28 +116,22 @@
     W[j] = tmp;
   }
 
-  /* ---------- Gauss–Jordan elimination ---------- */
+  /* ---------- Gaussian and Gauss–Jordan elimination ---------- */
 
   /*
-   * rref(A) -> { steps, rref, pivots, rank }
-   *
-   * Anton's two phases:
-   *   forward:  left to right, find a nonzero entry at or below the current row
-   *             (interchange rows if needed), make it a leading 1, zero the entries below it;
-   *   backward: from the last leading 1 up, zero the entries above each leading 1.
-   *
    * Each step: { kind: "swap" | "scale" | "add", phase: "forward" | "backward",
-   *              text, rows (indices changed), matrix (after the step) }
+   *              text, rows (indices changed), matrix (after the step),
+   *              op: { type: "swap", i, j }            Rᵢ ↔ Rⱼ
+   *                | { type: "scale", i, c }           Rᵢ → cRᵢ
+   *                | { type: "add", target, source, c } R_target → R_target + c·R_source }
    * pivots: 0-based column index of each leading 1, top to bottom.
    */
-  function rref(Ain) {
-    const W = clone(toMatrix(Ain));
+
+  /* Forward phase only (Gaussian elimination): a row echelon form with leading 1s. */
+  function forward(W, steps, pivots) {
     const m = W.length;
     const n = m ? W[0].length : 0;
-    const steps = [];
-    const pivots = [];
-    const record = (kind, phase, text, rows) => steps.push({ kind, phase, text, rows, matrix: clone(W) });
-
+    const record = (kind, text, rows, op) => steps.push({ kind, phase: "forward", text, rows, matrix: clone(W), op });
     let r = 0;
     for (let c = 0; c < n && r < m; c++) {
       let p = r;
@@ -139,34 +140,59 @@
 
       if (p !== r) {
         swapRows(W, p, r);
-        record("swap", "forward", swapText(r, p), [r, p]);
+        record("swap", swapText(r, p), [r, p], { type: "swap", i: r, j: p });
       }
       const pivot = W[r][c];
       if (!isOne(pivot)) {
         const s = reciprocal(pivot);
         scaleRow(W, r, s);
-        record("scale", "forward", scaleText(r, s), [r]);
+        record("scale", scaleText(r, s), [r], { type: "scale", i: r, c: s });
       }
       for (let i = r + 1; i < m; i++) {
         const v = W[i][c];
         if (v.isZero()) continue;
         subtractMultiple(W, i, v, r);
-        record("add", "forward", addText(i, v, r), [i]);
+        record("add", addText(i, v, r), [i], { type: "add", target: i, source: r, c: v.neg() });
       }
       pivots.push(c);
       r++;
     }
+  }
 
+  /* Backward phase: from the last leading 1 up, zero the entries above each leading 1. */
+  function backward(W, steps, pivots) {
     for (let k = pivots.length - 1; k >= 0; k--) {
       const c = pivots[k];
       for (let i = k - 1; i >= 0; i--) {
         const v = W[i][c];
         if (v.isZero()) continue;
         subtractMultiple(W, i, v, k);
-        record("add", "backward", addText(i, v, k), [i]);
+        steps.push({ kind: "add", phase: "backward", text: addText(i, v, k), rows: [i], matrix: clone(W), op: { type: "add", target: i, source: k, c: v.neg() } });
       }
     }
+  }
 
+  /* ref(A) -> { steps, ref, pivots, rank }: Gaussian elimination (Anton's forward phase). */
+  function ref(Ain) {
+    const W = clone(toMatrix(Ain));
+    const steps = [];
+    const pivots = [];
+    forward(W, steps, pivots);
+    return { steps, ref: W, pivots, rank: pivots.length };
+  }
+
+  /*
+   * rref(A) -> { steps, rref, pivots, rank }: Gauss–Jordan elimination, Anton's two phases.
+   *   forward:  left to right, find a nonzero entry at or below the current row
+   *             (interchange rows if needed), make it a leading 1, zero the entries below it;
+   *   backward: from the last leading 1 up, zero the entries above each leading 1.
+   */
+  function rref(Ain) {
+    const W = clone(toMatrix(Ain));
+    const steps = [];
+    const pivots = [];
+    forward(W, steps, pivots);
+    backward(W, steps, pivots);
     return { steps, rref: W, pivots, rank: pivots.length };
   }
 
@@ -179,6 +205,7 @@
     reciprocal,
     lift,
     sub,
+    sup,
     coef,
     factor,
     linear,
@@ -190,6 +217,7 @@
     scaleRow,
     subtractMultiple,
     swapRows,
+    ref,
     rref,
   };
 

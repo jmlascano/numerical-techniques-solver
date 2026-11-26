@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex">
   <title>Tests — AMAT 105 Linear Algebra Solver</title>
-  <link rel="stylesheet" href="style.css?v=7">
+  <link rel="stylesheet" href="style.css?v=8">
   <style>
     .t-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
     .t-table th, .t-table td { text-align: left; vertical-align: top; padding: var(--s1); border-bottom: 1px solid var(--line-soft); }
@@ -31,13 +31,16 @@
     <p class="hint"><a href="index.html">Back to the solver</a></p>
   </main>
 
-  <script src="fraction.js?v=7"></script>
-  <script src="surd.js?v=7"></script>
-  <script src="rowreduce.js?v=7"></script>
-  <script src="matrix.js?v=7"></script>
-  <script src="poly.js?v=7"></script>
-  <script src="lu.js?v=7"></script>
-  <script src="spaces.js?v=7"></script>
+  <script src="fraction.js?v=8"></script>
+  <script src="surd.js?v=8"></script>
+  <script src="rowreduce.js?v=8"></script>
+  <script src="matrix.js?v=8"></script>
+  <script src="poly.js?v=8"></script>
+  <script src="lu.js?v=8"></script>
+  <script src="spaces.js?v=8"></script>
+  <script src="systems.js?v=8"></script>
+  <script src="matops.js?v=8"></script>
+  <script src="determinants.js?v=8"></script>
   <script>
     (function () {
       "use strict";
@@ -295,6 +298,109 @@
         eq("eigenvector for 2 + √3", v.map(D), ["7 − 4√3", "2 − √3", "1"]);
         eq("Av = (2 + √3)v exactly", Matrix.vectorsEqual(Matrix.multiplyVector(Surd.liftMatrix(A4, 3), v), v.map((x) => x.mul(lam))), true);
         eq("row operations written with surd coefficients", r.reduction.steps[0].text, "R₁ → (2 − √3)R₁");
+      });
+
+
+      /* ================= Systems of Linear Equations (AB1) ================= */
+      test("AB1 Test 1: Problem A, unique solution", () => {
+        const r = Systems.solve(A, [9, 0, -1], Systems.variableNames(3, "letters"));
+        eq("status", r.status, "unique");
+        eq("(x, y, z)", r.values.map(D), ["1", "−1", "2"]);
+        eq("back-substitution, last row first", r.back.map((b) => b.result), ["z = 2", "y = −1", "x = 1"]);
+        eq("Ax = b", r.check.ok, true);
+      });
+      test("AB1 Test 2: Problem Set 1 A (4 × 4)", () => {
+        const PS1 = [[1, 2, -1, 1], [-1, 1, 2, -1], [2, -1, 2, 2], [1, 1, -1, 2]];
+        const r = Systems.solve(PS1, [6, 3, 14, 8], Systems.variableNames(4, "letters"));
+        eq("variable names", r.names, ["w", "x", "y", "z"]);
+        eq("(w, x, y, z)", [r.status].concat(r.values.map(D)), ["unique", "1", "2", "3", "4"]);
+      });
+      test("AB1 Test 3: inconsistent", () => {
+        const r = Systems.solve([[1, 1], [3, 3]], [4, 6]);
+        eq("status", r.status, "inconsistent");
+        eq("echelon form has the row [0 0 | 1]", r.reduction.ref[r.badRow].map(D), ["0", "0", "1"]);
+      });
+      test("AB1 Test 4: infinitely many solutions", () => {
+        const r = Systems.solve([[1, -1, 2], [2, -2, 4], [3, -3, 6]], [5, 10, 15], Systems.variableNames(3, "letters"));
+        eq("status", r.status, "infinite");
+        eq("leading / free", [r.leading.map((j) => r.names[j]), r.free.map((j) => r.names[j])], [["x"], ["y", "z"]]);
+        eq("x in terms of the free variables", r.back[r.back.length - 1].result, "x = 5 + y − 2z");
+        eq("particular solution and every direction check", [r.check.ok].concat(r.check.directions.map((d) => d.ok)), [true, true, true]);
+      });
+
+      /* ================= Matrices and Matrix Operations (B2) ================= */
+      const A13 = [[3, 0], [-1, 2], [1, 1]], B13 = [[4, -1], [0, 2]], C13 = [[1, 4, 2], [3, 1, 5]];
+      const D13 = [[1, 5, 2], [-1, 0, 1], [3, 2, 4]], E13 = [[6, 1, 3], [-1, 1, 2], [4, 1, 3]];
+      const PS1 = [[1, 2, -1, 1], [-1, 1, 2, -1], [2, -1, 2, 2], [1, 1, -1, 2]];
+      test("B2 arithmetic (Anton §1.3)", () => {
+        eq("D + E", Dm(MatOps.combine(1, D13, 1, E13).result), [["7", "6", "5"], ["−2", "1", "3"], ["7", "3", "7"]]);
+        eq("D − E", Dm(MatOps.combine(1, D13, -1, E13).result), [["−5", "4", "−1"], ["0", "−1", "−1"], ["−1", "1", "1"]]);
+        eq("5A", Dm(MatOps.combine(5, A13).result), [["15", "0"], ["−5", "10"], ["5", "5"]]);
+        eq("−7C", Dm(MatOps.combine(-7, C13).result), [["−7", "−28", "−14"], ["−21", "−7", "−35"]]);
+        eq("AB", Dm(MatOps.product(A13, B13).result), [["12", "−3"], ["−4", "5"], ["4", "1"]]);
+        eq("BC", Dm(MatOps.product(B13, C13).result), [["1", "15", "3"], ["6", "2", "10"]]);
+        eq("DE", Dm(MatOps.product(D13, E13).result), [["9", "8", "19"], ["−2", "0", "0"], ["32", "9", "25"]]);
+        eq("tr(D)", D(MatOps.trace(D13).value), "5");
+        eq("Aᵀ", Dm(MatOps.transpose(A13).result), [["3", "−1", "1"], ["0", "2", "1"]]);
+        eq("c₁₁ of AB, written out", MatOps.product(A13, B13).entries[0][0].sum, "3·4 + 0·0");
+      });
+      test("B2 undefined operations do not crash", () => {
+        const r = MatOps.combine(2, B13, -1, C13);
+        eq("2B − C is undefined", [r.ok, r.reason], [false, "2A − B is undefined: A is 2 × 2 and B is 2 × 3; A and B must have the same size."]);
+        const p = MatOps.product(B13, A13);
+        eq("BA with B 2 × 2 and A 3 × 2 is undefined", p.ok, false);
+        eq("tr of a non-square matrix is undefined", MatOps.trace(A13).ok, false);
+      });
+      test("B2 inverse by Gauss–Jordan", () => {
+        const r = MatOps.inverse(A);
+        eq("Problem A matrix: 52·A⁻¹", Dm(Matrix.scale(52, r.inverse)), [["7", "5", "11"], ["−5", "−11", "7"], ["11", "−7", "−5"]]);
+        eq("AA⁻¹ = I", Matrix.equals(r.check, Matrix.identity(3)), true);
+        const r2 = MatOps.inverse(PS1);
+        eq("PS1 4 × 4 inverse", Dm(r2.inverse), [["15/17", "−7/17", "6/17", "−1"], ["6/17", "4/17", "−1/17", "0"], ["−1/17", "5/17", "3/17", "0"], ["−11/17", "4/17", "−1/17", "1"]]);
+        const r3 = MatOps.inverse([[1, 2, 3], [2, 4, 6], [1, 0, 1]]);
+        eq("singular: stops when the left side gets a zero row", [r3.ok, r3.zeroRow + 1], [false, 2]);
+      });
+      test("B2 elementary matrices (professor's notation)", () => {
+        eq("E₁(2, 2)", Dm(MatOps.E1(2, 2, 3)), [["1", "0", "0"], ["0", "2", "0"], ["0", "0", "1"]]);
+        eq("E₂(1, 3)", Dm(MatOps.E2(1, 3, 3)), [["0", "0", "1"], ["0", "1", "0"], ["1", "0", "0"]]);
+        eq("E₃(−2, 1, 2)", Dm(MatOps.E3(-2, 1, 2, 3)), [["1", "0", "0"], ["−2", "1", "0"], ["0", "0", "1"]]);
+        eq("names", [MatOps.elementary(1, 3, 2, 2).name, MatOps.elementary(2, 3, null, 1, 3).name, MatOps.elementary(3, 3, -2, 1, 2).name], ["E₁(2, 2)", "E₂(1, 3)", "E₃(−2, 1, 2)"]);
+      });
+      test("B2 Problem A matrix as a product of elementary matrices", () => {
+        const r = MatOps.asElementaryProduct(A);
+        eq("Eₚ⋯E₁A = I is reached", r.ok, true);
+        eq("first operation and its inverse", [r.steps[0].e.name, r.steps[0].inv.name], ["E₁(1/2, 1)", "E₁(2, 1)"]);
+        eq("product of the listed inverses equals A exactly", Matrix.equals(r.value, A), true);
+        eq("singular A is refused", MatOps.asElementaryProduct([[1, 2], [2, 4]]).ok, false);
+      });
+
+      /* ================= Determinants (C) ================= */
+      test("C: Problem A matrix by all three methods", () => {
+        eq("by definition", D(Determinants.byDefinition(A).value), "52");
+        eq("  6 permutations", Determinants.byDefinition(A).rows.length, 6);
+        eq("by cofactor expansion along row 1", D(Determinants.byCofactors(A, "row", 0).value), "52");
+        eq("by cofactor expansion along column 3", D(Determinants.byCofactors(A, "col", 2).value), "52");
+        const adj = Determinants.byAdjoint(A);
+        eq("by the adjoint", D(adj.det), "52");
+        eq("adj(A)", Dm(adj.adj), [["7", "5", "11"], ["−5", "−11", "7"], ["11", "−7", "−5"]]);
+      });
+      test("C: PS1 4 × 4 by all three methods", () => {
+        eq("by definition (24 terms)", [D(Determinants.byDefinition(PS1).value), Determinants.byDefinition(PS1).rows.length], ["17", 24]);
+        const c = Determinants.byCofactors(PS1, "row", 0);
+        eq("by cofactors, written out to 2 × 2", [D(c.value), c.written, !!c.tree.terms[0].expansion.terms[0].expansion.twoByTwo], ["17", true, true]);
+        eq("by the adjoint", D(Determinants.byAdjoint(PS1).det), "17");
+      });
+      test("C: singular matrix", () => {
+        const S = [[1, 2, 3], [2, 4, 6], [1, 0, 1]];
+        eq("det = 0 by all three methods", [Determinants.byDefinition(S).value, Determinants.byCofactors(S).value, Determinants.byAdjoint(S).det].map(D), ["0", "0", "0"]);
+        eq("adjoint method: A⁻¹ does not exist", [Determinants.byAdjoint(S).invertible, Determinants.byAdjoint(S).inverse], [false, null]);
+      });
+      test("C: size limits", () => {
+        const I5 = Matrix.identity(5);
+        eq("definition refuses 5 × 5 with a reason", Determinants.byDefinition(I5).ok, false);
+        const c = Determinants.byCofactors(I5);
+        eq("cofactors on 5 × 5: top level only", [D(c.value), c.written, c.tree.terms[0].expansion], ["1", false, null]);
+        eq("inversions of (3, 1, 2) = 2 (even)", Determinants.inversions([2, 0, 1]), 2);
       });
 
       const s = document.getElementById("summary");

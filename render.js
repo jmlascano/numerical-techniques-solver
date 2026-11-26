@@ -29,7 +29,8 @@
   /*
    * A matrix (array of rows) or a vector (flat array) between square brackets.
    * A flat array is a column vector unless opts.asRow is set.
-   * opts: { label, highlightRows: [i], highlightCols: [j], asRow }
+   * opts: { label, highlightRows: [i], highlightCols: [j], asRow, augment }
+   * augment: draw the bar of an augmented matrix [A | B] before this column index.
    */
   function matrix(M, opts) {
     opts = opts || {};
@@ -39,7 +40,7 @@
     const grid = el("div", { class: "m-grid", role: "table", "aria-label": opts.label || "matrix" });
     rows.forEach((row, i) => {
       const r = el("div", { class: "m-row" + (hr.has(i) ? " is-changed" : ""), role: "row" });
-      row.forEach((v, j) => r.appendChild(el("span", { class: "m-cell" + (hc.has(j) ? " is-changed" : ""), role: "cell", text: text(v) })));
+      row.forEach((v, j) => r.appendChild(el("span", { class: "m-cell" + (hc.has(j) ? " is-changed" : "") + (opts.augment === j ? " is-aug" : ""), role: "cell", text: text(v) })));
       grid.appendChild(r);
     });
     return el("div", { class: "m-bracket" }, [grid]);
@@ -93,8 +94,9 @@
    * Numbered list of row operations, each followed by the matrix after it.
    * steps: [{ text, note?, rows?, matrix (null for a no-op step) }]
    * groupLabel(step, index) -> a heading string to insert before this step, or null.
+   * matrixOpts: extra options for every step matrix, e.g. { augment: n }.
    */
-  function stepList(steps, groupLabel) {
+  function stepList(steps, groupLabel, matrixOpts) {
     const list = el("ol", { class: "steps" });
     steps.forEach((s, idx) => {
       const g = groupLabel ? groupLabel(s, idx) : null;
@@ -102,10 +104,25 @@
       const head = el("div", { class: "step-head" }, [el("span", { class: "op", text: s.text })]);
       if (s.note) head.appendChild(el("span", { class: "l-note", text: s.note }));
       const item = el("li", { class: "step" + (s.matrix ? "" : " is-skip") }, [head]);
-      if (s.matrix) item.appendChild(scroller(matrix(s.matrix, { highlightRows: s.rows, label: "matrix after " + s.text })));
+      if (s.matrix) item.appendChild(scroller(matrix(s.matrix, Object.assign({ highlightRows: s.rows, label: "matrix after " + s.text }, matrixOpts))));
       list.appendChild(item);
     });
     return list;
+  }
+
+  /* A closed-by-default disclosure: <details><summary>…</summary>…</details>. */
+  function disclosure(summaryText, children) {
+    return el("details", { class: "disclosure" }, [el("summary", { text: summaryText })].concat(children));
+  }
+
+  /* A simple data table. head: [string], rows: [[string]], numeric: [bool per column]. */
+  function table(head, rows, numeric, label) {
+    const isNum = (j) => numeric && numeric[j];
+    const t = el("table", { class: "data-table", "aria-label": label }, [
+      el("thead", {}, [el("tr", {}, head.map((h, j) => el("th", { class: isNum(j) ? "num" : null, scope: "col", text: h })))]),
+      el("tbody", {}, rows.map((r) => el("tr", {}, r.map((c, j) => el("td", { class: isNum(j) ? "num" : null, text: c }))))),
+    ]);
+    return scroller(t);
   }
 
   /* ---------- Matrix input grid ---------- */
@@ -199,6 +216,37 @@
     scope.querySelectorAll("input[aria-invalid]").forEach((inp) => inp.removeAttribute("aria-invalid"));
   }
 
+  /* Fill a <select> with the integers from..to; keeps the current value when it is still in range. */
+  function fillSelect(select, from, to, selected) {
+    const keep = select.value;
+    select.innerHTML = "";
+    for (let v = from; v <= to; v++) select.appendChild(el("option", { value: v, text: String(v) }));
+    const want = keep && Number(keep) >= from && Number(keep) <= to ? keep : String(selected);
+    select.value = want;
+  }
+
+  /*
+   * Keep a primary button disabled until every visible input in `scope` is filled.
+   * Returns an update() function; the hint names how many entries are still empty.
+   */
+  function requireFilled(button, hintEl, scope, what) {
+    return function update() {
+      const inputs = Array.from(scope.querySelectorAll("input")).filter((inp) => !inp.closest("[hidden]"));
+      const missing = inputs.filter((inp) => inp.value.trim() === "").length;
+      button.disabled = missing > 0;
+      hintEl.textContent = missing > 0 ? "Fill in every entry to " + what + " (" + missing + " empty)." : "";
+    };
+  }
+
+  /* Parse one scalar <input> as a Fraction; returns { value } or { error: { el, text } }. */
+  function readScalar(input, name) {
+    try {
+      return { value: global.Fraction.parse(input.value) };
+    } catch (e) {
+      return { error: { el: input, text: name + ": " + describeParseError(input.value, e) } };
+    }
+  }
+
   /* Reveal a results section, scroll to it, and move focus to its heading. */
   function reveal(resultsEl, headingEl) {
     resultsEl.hidden = false;
@@ -218,6 +266,11 @@
     scroller,
     para,
     stepList,
+    disclosure,
+    table,
+    fillSelect,
+    requireFilled,
+    readScalar,
     buildInputGrid,
     fillInputGrid,
     readInputGrid,
